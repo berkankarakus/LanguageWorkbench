@@ -1,17 +1,12 @@
-namespace FrontEnd.Messaging;
+namespace Messaging;
 
 /// <summary>
 /// A helper class to which message producer classes delegate the task of maintaining and notifying listeners.
 /// </summary>
 public class MessageHandler
 {
-    private Message _message;
-    private List<IMessageListener> _listeners;
-
-    public MessageHandler()
-    {
-        _listeners = new();
-    }
+    private Message? _message;
+    private readonly List<IMessageListener> _listeners = [];
 
     /// <summary>
     /// Add a listener to the listeners list.
@@ -39,15 +34,15 @@ public class MessageHandler
     public void SendMessage(Message message)
     {
         _message = message;
-        NotifyListeners();
+        NotifyListeners(message);
     }
 
     /// <summary>
     /// Notify each listener in the listener list by calling the listener's MessageReceived() method.
     /// </summary>
-    private void NotifyListeners()
+    private void NotifyListeners(Message message)
     {
         foreach (var listener in _listeners)
-            listener.MessageReceived(_message);
+            listener.MessageReceived(message);
     }
 }

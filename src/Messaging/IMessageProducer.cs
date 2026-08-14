@@ -1,4 +1,4 @@
-namespace FrontEnd.Messaging;
+namespace Messaging;
 
 public interface IMessageProducer
 {
@@ -6,7 +6,7 @@ public interface IMessageProducer
     /// Add a listener to the listeners list.
     /// </summary>
     /// <param name="listener">The listener to add</param>
-    public void AddMessageListener(IMessageListener  listener);
+    public void AddMessageListener(IMessageListener listener);
 
     /// <summary>
     /// Remove a listener from the listener list.

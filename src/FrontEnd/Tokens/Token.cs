@@ -1,22 +1,24 @@
-namespace FrontEnd;
+using FrontEnd.Scanning;
+
+namespace FrontEnd.Tokens;
 
 /// <summary>
 /// Represents a lexical token produced by a <see cref="Scanner"/>.
 /// </summary>
 public class Token
 {
-    protected ITokenType _tokenType; // language-specific token type
-    protected string _text; // token text
-    protected object _value; // token value
-    protected Source.Source _source;
-    protected int _lineNumber; // line number of the token's source file
-    protected int _position; // position of the first token character
+    public ITokenType? TokenType { get; protected set; }
+    public string? Text { get; protected set; }
+    public object? Value { get; protected set; }
+    private readonly Source.Source _source;
+    public int LineNumber { get; }
+    public int Position { get; } // position of the first token character
 
     public Token(Source.Source source)
     {
         _source = source;
-        _lineNumber = source.LineNumber;
-        _position = source.CurrentPosition;
+        LineNumber = source.LineNumber;
+        Position = source.CurrentPosition;
     }
 
     /// <summary>
@@ -26,7 +28,7 @@ public class Token
     /// </summary>
     protected virtual void Extract()
     {
-        _text = char.ToString(CurrentChar());
+        Text = char.ToString(CurrentChar());
     }
 
     protected virtual char CurrentChar()

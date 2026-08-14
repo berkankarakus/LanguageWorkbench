@@ -1,6 +1,11 @@
-namespace FrontEnd.Messaging;
+namespace Messaging;
 
-public class Message(MessageType type, object body);
+public sealed class Message(MessageType type, object body)
+{
+    public MessageType Type { get; } = type;
+
+    public object Body { get; } = body;
+}
 
 public enum MessageType
 {

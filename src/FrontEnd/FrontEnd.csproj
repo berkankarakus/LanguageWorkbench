@@ -10,6 +10,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Intermediate\Intermediate.csproj" />
+        <ProjectReference Include="..\Messaging\Messaging.csproj" />
     </ItemGroup>
 
 </Project>

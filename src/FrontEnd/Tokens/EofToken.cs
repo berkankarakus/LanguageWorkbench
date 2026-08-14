@@ -1,4 +1,4 @@
-namespace FrontEnd;
+namespace FrontEnd.Tokens;
 
 public class EofToken(Source.Source source) : Token(source)
 {

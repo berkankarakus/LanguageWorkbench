@@ -1,4 +1,6 @@
-namespace FrontEnd;
+using FrontEnd.Tokens;
+
+namespace FrontEnd.Scanning;
 
 /// <summary>
 /// Provides a language-independent base for lexical scanners.
@@ -8,13 +10,13 @@ namespace FrontEnd;
 /// </remarks>
 public abstract class Scanner(Source.Source source)
 {
-    private Token _currentToken;
+    private Token? _currentToken;
 
     /// <summary>
     /// Gets the most recently extracted token.
     /// </summary>
     /// <returns>The current token, or <see langword="null"/> before the first token is extracted.</returns>
-    public virtual Token CurrentToken()
+    public virtual Token? CurrentToken()
     {
         return _currentToken;
     }
@@ -36,10 +38,7 @@ public abstract class Scanner(Source.Source source)
     /// <exception cref="NotImplementedException">
     /// Thrown when a derived scanner does not provide an implementation.
     /// </exception>
-    protected virtual Token ExtractToken()
-    {
-        throw new NotImplementedException();
-    }
+    protected abstract Token ExtractToken();
 
     /// <summary>
     /// Returns the current character from the source.

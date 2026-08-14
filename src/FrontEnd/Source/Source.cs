@@ -1,4 +1,4 @@
-using FrontEnd.Messaging;
+using Messaging;
 
 namespace FrontEnd.Source;
 
@@ -7,10 +7,10 @@ namespace FrontEnd.Source;
 /// </summary>
 public sealed class Source(TextReader reader) : IMessageProducer, IDisposable
 {
-    private const char EndOfLine = '\n';
-    private const char EndOfFile = '\0';
+    public const char EndOfLine = '\n';
+    public const char EndOfFile = '\0';
 
-    protected static readonly MessageHandler MessageHandler = new();
+    private static readonly MessageHandler MessageHandler = new();
     private readonly TextReader _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     private string? _line;
     public int LineNumber { get; private set; }

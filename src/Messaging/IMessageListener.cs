@@ -1,4 +1,4 @@
-namespace FrontEnd.Messaging;
+namespace Messaging;
 
 public interface IMessageListener
 {

@@ -8,7 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\FrontEnd\FrontEnd.csproj" />
         <ProjectReference Include="..\Intermediate\Intermediate.csproj" />
+        <ProjectReference Include="..\Messaging\Messaging.csproj" />
     </ItemGroup>
 
 </Project>
