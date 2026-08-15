@@ -1,3 +1,4 @@
+using FrontEnd.Input;
 using FrontEnd.Scanning;
 
 namespace FrontEnd.Tokens;
@@ -10,11 +11,11 @@ public class Token
     public ITokenType? TokenType { get; protected set; }
     public string? Text { get; protected set; }
     public object? Value { get; protected set; }
-    private readonly Source.Source _source;
+    private readonly SourceReader _source;
     public int LineNumber { get; }
     public int Position { get; } // position of the first token character
 
-    public Token(Source.Source source)
+    public Token(SourceReader source)
     {
         _source = source;
         LineNumber = source.LineNumber;

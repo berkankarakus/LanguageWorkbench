@@ -1,3 +1,4 @@
+using FrontEnd.Input;
 using FrontEnd.Tokens;
 
 namespace FrontEnd.Scanning;
@@ -8,7 +9,7 @@ namespace FrontEnd.Scanning;
 /// <remarks>
 /// Language-specific scanners derive from this class and implement token extraction.
 /// </remarks>
-public abstract class Scanner(Source.Source source)
+public abstract class Scanner(SourceReader source)
 {
     private Token? _currentToken;
 

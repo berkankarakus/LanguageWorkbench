@@ -1,6 +1,8 @@
+using FrontEnd.Input;
+
 namespace FrontEnd.Tokens;
 
-public class EofToken(Source.Source source) : Token(source)
+public class EofToken(SourceReader source) : Token(source)
 {
     /// <summary>
     /// Do nothing. Do not consume any source characters.

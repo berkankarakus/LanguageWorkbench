@@ -1,13 +1,13 @@
 using Messaging;
 
-namespace FrontEnd.Source;
+namespace FrontEnd.Input;
 
 /// <summary>
 /// Represents the source program being scanned.
 /// </summary>
-public sealed class Source(TextReader reader) : IMessageProducer, IDisposable
+public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposable
 {
-    public const char EndOfLine = '\n';
+    private const char EndOfLine = '\n';
     public const char EndOfFile = '\0';
 
     private static readonly MessageHandler MessageHandler = new();
