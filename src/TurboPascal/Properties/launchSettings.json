@@ -1,9 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "FrontEnd": {
+    "TurboPascal": {
       "commandName": "Project",
-      "commandLineArgs": "",
+      "commandLineArgs": "--help",
       "workingDirectory": "$(ProjectDir)",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"

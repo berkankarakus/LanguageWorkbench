@@ -8,7 +8,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontEnd", "src\FrontEnd\Fr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intermediate", "src\Intermediate\Intermediate.csproj", "{AC5B0CD1-56D7-4BCD-A88D-B30A3B889043}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackEnd", "src\BackEnd\BackEnd.csproj", "{6D7FBB4A-BE0E-4128-BEB8-2ECEFCA66737}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backend", "src\BackEnd\BackEnd.csproj", "{6D7FBB4A-BE0E-4128-BEB8-2ECEFCA66737}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messaging", "src\Messaging\Messaging.csproj", "{6D347736-F92F-406B-A348-3F7ECFD4D836}"
 EndProject
@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		compose.yaml = compose.yaml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontEnd.Pascal", "src\FrontEnd.Pascal\FrontEnd.Pascal.csproj", "{44DD913A-E7EB-4573-9EF6-5BE431F0ACCE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TurboPascal", "src\TurboPascal\TurboPascal.csproj", "{44DD913A-E7EB-4573-9EF6-5BE431F0ACCE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

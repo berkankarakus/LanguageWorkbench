@@ -84,4 +84,14 @@ public abstract class Parser(Scanner scanner) : IMessageProducer
     {
         MessageHandler.SendMessage(message);
     }
+
+    public ICode GetICode()
+    {
+        throw new NotImplementedException();
+    }
+
+    public ISymbolTable GetSymbolTable()
+    {
+        throw new NotImplementedException();
+    }
 }
