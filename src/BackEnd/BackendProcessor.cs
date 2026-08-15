@@ -2,19 +2,19 @@ using Intermediate.Code;
 using Intermediate.Symbols;
 using Messaging;
 
-namespace BackEnd;
+namespace Backend;
 
 /// <summary>
 /// The framework class that represents the back-end component.
 /// </summary>
-public abstract class BackEnd : IMessageProducer
+public abstract class BackendProcessor : IMessageProducer
 {
     // MessageHandler delegate
-    protected static readonly MessageHandler MessageHandler;
+    private static readonly MessageHandler MessageHandler;
     protected ISymbolTable? SymbolTable;
     protected ICode? Code;
 
-    static BackEnd()
+    static BackendProcessor()
     {
         MessageHandler = new MessageHandler();
     }
@@ -28,10 +28,7 @@ public abstract class BackEnd : IMessageProducer
     /// <param name="iCode">the intermediate code</param>
     /// <param name="symbolTable">the symbol table</param>
     /// <exception cref="NotImplementedException"></exception>
-    public virtual void Process(ICode iCode,  ISymbolTable symbolTable)
-    {
-        throw new NotImplementedException();
-    }
+    public abstract void Process(ICode iCode, ISymbolTable symbolTable);
 
     public void AddMessageListener(IMessageListener listener)
     {
