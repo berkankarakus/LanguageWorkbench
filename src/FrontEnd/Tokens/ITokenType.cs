@@ -1,6 +1,3 @@
-namespace FrontEnd;
+namespace FrontEnd.Tokens;
 
-public interface ITokenType
-{
-    
-}
+public interface ITokenType;

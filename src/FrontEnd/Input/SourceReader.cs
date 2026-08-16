@@ -28,30 +28,20 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
         if (_line is null)
             return EndOfFile;
 
-        if (CurrentPosition == -1 || CurrentPosition == _line.Length)
-            return EndOfLine;
+        if (CurrentPosition != -1 && CurrentPosition != _line.Length)
+            return _line[CurrentPosition++];
 
-        return _line[CurrentPosition];
+        ReadLine();
+
+        return _line is null
+            ? EndOfFile
+            : EndOfLine;
     }
 
     public char NextChar()
     {
         ++CurrentPosition;
         return CurrentChar();
-    }
-
-    public char PeekChar()
-    {
-        CurrentChar();
-
-        if (_line is null)
-            return EndOfFile;
-
-        int nextPosition = CurrentPosition + 1;
-
-        return nextPosition < _line.Length
-            ? _line[nextPosition]
-            : EndOfLine;
     }
 
     /// <summary>
@@ -68,6 +58,24 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
         // Send a source line message containing the line number and the line text to all the listeners.
         if (_line is not null)
             SendMessage(new Message(MessageType.SourceLine, new object[] { LineNumber, _line }));
+    }
+
+    /// <summary>
+    /// TODO
+    /// </summary>
+    /// <returns></returns>
+    public char PeekChar()
+    {
+        CurrentChar();
+
+        if (_line is null)
+            return EndOfFile;
+
+        int nextPosition = CurrentPosition + 1;
+
+        return nextPosition < _line.Length
+            ? _line[nextPosition]
+            : EndOfLine;
     }
 
     private void Close()

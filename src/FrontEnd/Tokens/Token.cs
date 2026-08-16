@@ -6,21 +6,13 @@ namespace FrontEnd.Tokens;
 /// <summary>
 /// Represents a lexical token produced by a <see cref="Scanner"/>.
 /// </summary>
-public class Token
+public class Token(SourceReader source)
 {
     public ITokenType? TokenType { get; protected set; }
     public string? Text { get; protected set; }
     public object? Value { get; protected set; }
-    private readonly SourceReader _source;
-    public int LineNumber { get; }
-    public int Position { get; } // position of the first token character
-
-    public Token(SourceReader source)
-    {
-        _source = source;
-        LineNumber = source.LineNumber;
-        Position = source.CurrentPosition;
-    }
+    public int LineNumber { get; } = source.LineNumber;
+    public int Position { get; } = source.CurrentPosition; // position of the first token character
 
     /// <summary>
     /// Default method to extract only one-character tokens from the source.
@@ -34,11 +26,11 @@ public class Token
 
     protected virtual char CurrentChar()
     {
-        return _source.CurrentChar();
+        return source.CurrentChar();
     }
 
     protected virtual char PeekChar()
     {
-        return _source.PeekChar();
+        return source.PeekChar();
     }
 }

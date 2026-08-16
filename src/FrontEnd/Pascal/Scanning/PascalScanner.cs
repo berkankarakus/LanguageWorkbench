@@ -10,6 +10,8 @@ namespace FrontEnd.Pascal.Scanning;
 /// <param name="source"></param>
 public class PascalScanner(SourceReader source) : Scanner(source)
 {
+    private readonly SourceReader _source = source;
+
     /// <summary>
     /// Extract and return the next Pascal token from the source.
     /// </summary>
@@ -17,15 +19,11 @@ public class PascalScanner(SourceReader source) : Scanner(source)
     /// <exception cref="NotImplementedException"></exception>
     protected override Token ExtractToken()
     {
-        Token token;
         char currentChar = CurrentChar();
 
         // Construct the next token. The current character determines the token type.
-        if (currentChar == SourceReader.EndOfFile)
-            token = new EofToken(source);
-        else
-            token = new Token(source);
-
-        return token;
+        return currentChar == SourceReader.EndOfFile
+            ? new EofToken(_source)
+            : new Token(_source);
     }
 }

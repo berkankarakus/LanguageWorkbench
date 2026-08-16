@@ -17,7 +17,7 @@ public abstract class Scanner(SourceReader source)
     /// Gets the most recently extracted token.
     /// </summary>
     /// <returns>The current token, or <see langword="null"/> before the first token is extracted.</returns>
-    public virtual Token? CurrentToken()
+    public Token? CurrentToken()
     {
         return _currentToken;
     }
@@ -26,7 +26,7 @@ public abstract class Scanner(SourceReader source)
     /// Extracts and returns the next token from the source.
     /// </summary>
     /// <returns>The next extracted token.</returns>
-    public virtual Token NextToken()
+    public Token NextToken()
     {
         _currentToken = ExtractToken();
         return _currentToken;
@@ -45,7 +45,7 @@ public abstract class Scanner(SourceReader source)
     /// Returns the current character from the source.
     /// </summary>
     /// <returns>The current character.</returns>
-    public char CurrentChar()
+    protected char CurrentChar()
     {
         return source.CurrentChar();
     }
