@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Intermediate.Code;
 using Intermediate.Symbols;
 using Messaging;
@@ -12,8 +13,8 @@ public class Executor : BackendProcessor
     /// <inheritdoc />
     public override void Process(ICode iCode, ISymbolTable symbolTable)
     {
-        long startTime = DateTime.UtcNow.Ticks;
-        float elapsedTime = (DateTime.UtcNow.Ticks - startTime) / 1000f;
+        long startTime = Stopwatch.GetTimestamp();
+        float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
         int executionCount = 0;
         int runtimeErrors = 0;
 

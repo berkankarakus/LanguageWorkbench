@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using FrontEnd.Parsing;
 using FrontEnd.Scanning;
 using FrontEnd.Tokens;
@@ -14,7 +15,7 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
     public override void Parse()
     {
         Token token;
-        long startTime = DateTime.UtcNow.Ticks;
+        long startTime = Stopwatch.GetTimestamp();
 
         do
         {
@@ -22,7 +23,7 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
         } while (token is not EofToken);
 
         // Send the parser summary message.
-        float elapsedTime = (DateTime.UtcNow.Ticks - startTime) / 1000f;
+        float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
         SendMessage(new(MessageType.ParserSummary, new object[] { token.LineNumber, GetErrorCount(), elapsedTime }));
     }
 

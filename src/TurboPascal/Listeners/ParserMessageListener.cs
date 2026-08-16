@@ -7,6 +7,28 @@ namespace TurboPascal.Listeners;
 /// </summary>
 public sealed class ParserMessageListener : IMessageListener
 {
+    /// <summary>
+    /// Called by the parser whenever it produces a message.
+    /// </summary>
+    /// <param name="message"></param>
+    public void MessageReceived(Message message)
+    {
+        MessageType type = message.Type;
+
+        switch (type)
+        {
+            case MessageType.ParserSummary:
+                object[] body = (object[])message.Body;
+                int statementCount = (int)body[0];
+                int syntaxErrorCount = (int)body[1];
+                float elapsedTime = (float)body[2];
+
+                Console.WriteLine($"\n{statementCount,20} source statements.\n{syntaxErrorCount,20} syntax errors.\n{elapsedTime,20:F2} seconds total parsing time.\n");
+                break;
+        }
+    }
+
+    /*
     /// <inheritdoc />
     public void MessageReceived(Message message)
     {
@@ -32,4 +54,5 @@ public sealed class ParserMessageListener : IMessageListener
 
         Console.WriteLine($"{lineCount} source lines, {errorCount} syntax errors, {elapsedTime:F3} seconds.");
     }
+    */
 }
