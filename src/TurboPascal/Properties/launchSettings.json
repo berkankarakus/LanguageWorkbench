@@ -3,7 +3,7 @@
   "profiles": {
     "TurboPascal": {
       "commandName": "Project",
-      "commandLineArgs": "--help",
+      "commandLineArgs": "compile hello.pas",
       "workingDirectory": "$(ProjectDir)",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"

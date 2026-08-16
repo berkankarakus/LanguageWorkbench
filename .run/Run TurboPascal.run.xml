@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Run TurboPascal" type="DotNetProject" factoryName=".NET Project">
-    <option name="EXE_PATH" value="" />
-    <option name="PROGRAM_PARAMETERS" value="--help" />
+    <option name="EXE_PATH" value="$PROJECT_DIR$/src/TurboPascal/bin/Debug/net10.0/TurboPascal" />
+    <option name="PROGRAM_PARAMETERS" value="compile src/TurboPascal/hello.pas" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <option name="PASS_PARENT_ENVS" value="1" />
     <option name="ENV_FILE_PATHS" value="" />
@@ -12,7 +12,7 @@
     <option name="AUTO_ATTACH_CHILDREN" value="0" />
     <option name="PROJECT_PATH" value="$PROJECT_DIR$/src/TurboPascal/TurboPascal.csproj" />
     <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
-    <option name="PROJECT_ARGUMENTS_TRACKING" value="0" />
+    <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
     <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="0" />
     <option name="PROJECT_KIND" value="DotNetCore" />
     <option name="PROJECT_TFM" value="net10.0" />
