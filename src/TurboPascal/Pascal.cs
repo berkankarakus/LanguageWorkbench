@@ -1,5 +1,4 @@
 using Backend;
-using FrontEnd.Factory;
 using FrontEnd.Input;
 using FrontEnd.Parsing;
 using FrontEnd.Pascal.Factory;
@@ -52,7 +51,7 @@ public class Pascal
             using var source = new SourceReader(File.OpenText(_filePath));
             source.AddMessageListener(new SourceMessageListener());
 
-            var factory = new PascalFrontEndFactory<PascalParserTopDown>(scanner => new PascalParserTopDown(scanner));
+            PascalFrontEndFactory<PascalParserTopDown> factory = new(scanner => new PascalParserTopDown(scanner));
             Parser parser = factory.CreateParser(source);
             parser.AddMessageListener(new ParserMessageListener());
 
@@ -60,8 +59,8 @@ public class Pascal
             backEnd.AddMessageListener(new BackendMessageListener());
 
             parser.Parse();
-            ICode iCode = parser.GetICode();
-            ISymbolTable symbolTable = parser.GetSymbolTable();
+            ICode iCode = parser.Code;
+            ISymbolTable symbolTable = parser.SymbolTable;
             backEnd.Process(iCode, symbolTable);
         }
 
