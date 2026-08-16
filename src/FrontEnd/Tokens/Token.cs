@@ -8,7 +8,7 @@ namespace FrontEnd.Tokens;
 /// </summary>
 public class Token(SourceReader source)
 {
-    public ITokenType? TokenType { get; protected set; }
+    public ITokenType? Type { get; protected set; }
     public string? Text { get; protected set; }
     public object? Value { get; protected set; }
     public int LineNumber { get; } = source.LineNumber;

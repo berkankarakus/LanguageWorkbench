@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using FrontEnd.Pascal.ErrorHandling;
+using FrontEnd.Pascal.Tokens;
 using FrontEnd.Parsing;
 using FrontEnd.Scanning;
 using FrontEnd.Tokens;
@@ -12,19 +14,62 @@ namespace FrontEnd.Pascal.Parsing;
 /// <param name="scanner"></param>
 public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
 {
+    private static readonly PascalErrorHandler ErrorHandler = new();
+
+    /// <summary>
+    /// Parse a Pascal source program and generate the symbol table and the intermediate code.
+    /// </summary>
     public override void Parse()
     {
-        Token token;
-        long startTime = Stopwatch.GetTimestamp();
-
-        do
+        try
         {
-            token = NextToken();
-        } while (token is not EofToken);
+            Token token;
+            long startTime = Stopwatch.GetTimestamp();
 
-        // Send the parser summary message.
-        float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
-        SendMessage(new(MessageType.ParserSummary, new object[] { token.LineNumber, GetErrorCount(), elapsedTime }));
+            do
+            {
+                token = NextToken();
+                ITokenType? tokenType = token.Type;
+
+                if (tokenType is null || tokenType == PascalTokenType.Error)
+                {
+                    if (token.Value is PascalErrorCode errorCode)
+                        ErrorHandler.Flag(token, errorCode, this);
+                }
+
+                else
+                {
+                    SendMessage(new(
+                        MessageType.Token,
+                        new object?[]
+                        {
+                            token.LineNumber,
+                            token.Position,
+                            tokenType,
+                            token.Text,
+                            token.Value
+                        }
+                    ));
+                }
+            } while (token is not EofToken);
+
+            // Send the parser summary message.
+            float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
+            SendMessage(new(
+                MessageType.ParserSummary,
+                new object[]
+                {
+                    token.LineNumber,
+                    GetErrorCount(),
+                    elapsedTime
+                })
+            );
+        }
+
+        catch (IOException)
+        {
+            ErrorHandler.AbortTranslation(PascalErrorCode.IoError, this);
+        }
     }
 
     /// <summary>
@@ -33,6 +78,6 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
     /// <returns></returns>
     public override int GetErrorCount()
     {
-        return 0;
+        return ErrorHandler.ErrorCount;
     }
 }
