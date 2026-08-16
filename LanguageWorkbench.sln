@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		compose.yaml = compose.yaml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TurboPascal", "src\TurboPascal\TurboPascal.csproj", "{44DD913A-E7EB-4573-9EF6-5BE431F0ACCE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageWorkbench.Cli", "src\LanguageWorkbench.Cli\LanguageWorkbench.Cli.csproj", "{44DD913A-E7EB-4573-9EF6-5BE431F0ACCE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

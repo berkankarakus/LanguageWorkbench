@@ -1,6 +1,6 @@
 using Messaging;
 
-namespace TurboPascal.Listeners;
+namespace LanguageWorkbench.Cli.Listeners;
 
 /// <summary>
 /// Listener for back-end messages.

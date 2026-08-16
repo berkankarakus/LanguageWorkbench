@@ -5,9 +5,9 @@ using FrontEnd.Pascal.Factory;
 using FrontEnd.Pascal.Parsing;
 using Intermediate.Code;
 using Intermediate.Symbols;
-using TurboPascal.Listeners;
+using LanguageWorkbench.Cli.Listeners;
 
-namespace TurboPascal;
+namespace LanguageWorkbench.Cli;
 
 public class Pascal
 {

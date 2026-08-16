@@ -1,6 +1,6 @@
 using Messaging;
 
-namespace TurboPascal.Listeners;
+namespace LanguageWorkbench.Cli.Listeners;
 
 /// <summary>
 /// Writes source lines received from the front end to the console.

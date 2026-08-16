@@ -1,7 +1,7 @@
-namespace TurboPascal;
+namespace LanguageWorkbench.Cli;
 
 /// <summary>
-/// Application entry point for TurboPascal.
+/// Application entry point for LanguageWorkbench.Cli.
 /// </summary>
 internal static class Program
 {
@@ -9,7 +9,7 @@ internal static class Program
     private const string Usage = "Usage: Pascal execute|compile " + Flags + " <source file path>";
 
     /// <summary>
-    /// Opens a Turbo Pascal source file and compiles/executes.
+    /// Opens a source file and compiles or executes it.
     /// </summary>
     /// <param name="args">A single source-file path, or <c>--help</c>.</param>
     /// <returns>An application exit code.</returns>
