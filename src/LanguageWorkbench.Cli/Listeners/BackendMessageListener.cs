@@ -25,7 +25,7 @@ public class BackendMessageListener : IMessageListener
                 int runtimeErrorCount = (int)body[1];
                 elapsedTime = (float)body[2];
 
-                Console.WriteLine($"\n{executionCount,20} statements executed.\n{runtimeErrorCount,20} runtime errors.\n{elapsedTime,20:F2} seconds total execution time.\n");
+                Console.WriteLine($"\n{executionCount,10} statements executed.\n{runtimeErrorCount,10} runtime errors.\n{elapsedTime,10:F2} seconds total execution time.");
                 break;
 
             case MessageType.CompilerSummary:
@@ -33,7 +33,7 @@ public class BackendMessageListener : IMessageListener
                 int instructionCount = (int)body[0];
                 elapsedTime = (float)body[1];
 
-                Console.WriteLine($"\n{instructionCount,20} instructions generated.\n{elapsedTime,20:F2} seconds total code generation time.\n");
+                Console.WriteLine($"\n{instructionCount,10} instructions generated.\n{elapsedTime,10:F2} seconds total code generation time.");
                 break;
         }
     }

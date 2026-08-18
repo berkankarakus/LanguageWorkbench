@@ -86,7 +86,6 @@ public abstract class Parser(Scanner scanner) : IMessageProducer
     /// Notify listeners after setting the message.
     /// </summary>
     /// <param name="message"></param>
-    /// <exception cref="NotImplementedException"></exception>
     public void SendMessage(Message message)
     {
         MessageHandler.SendMessage(message);

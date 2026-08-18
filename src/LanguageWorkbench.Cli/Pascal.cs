@@ -49,11 +49,12 @@ public class Pascal
         try
         {
             using var source = new SourceReader(File.OpenText(_filePath));
-            source.AddMessageListener(new SourceMessageListener());
+            ParserMessageListener parserMessageListener = new();
+            source.AddMessageListener(new SourceMessageListener(parserMessageListener.FlushTokens));
 
             PascalFrontEndFactory<PascalParserTopDown> factory = new(scanner => new PascalParserTopDown(scanner));
             Parser parser = factory.CreateParser(source);
-            parser.AddMessageListener(new ParserMessageListener());
+            parser.AddMessageListener(parserMessageListener);
 
             BackendProcessor backEnd = BackendFactory.Create(_operation);
             backEnd.AddMessageListener(new BackendMessageListener());

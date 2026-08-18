@@ -27,7 +27,7 @@ public class PascalErrorHandler
                 token.LineNumber,
                 token.Position,
                 token.Text,
-                errorCode.ToString()
+                errorCode.GetMessage()
             })
         );
 
@@ -37,7 +37,7 @@ public class PascalErrorHandler
 
     public void AbortTranslation(PascalErrorCode errorCode, Parser parser)
     {
-        string fatalText = "FATAL ERROR: " + errorCode.ToString();
+        string fatalText = "FATAL ERROR: " + errorCode.GetMessage();
         parser.SendMessage(new(
             MessageType.SyntaxError,
             new object?[]

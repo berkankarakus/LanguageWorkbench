@@ -6,7 +6,7 @@ VAR
     i : integer;
 
     BEGIN
-        FOR i := 1 TO 10 DO
+        FOR i := 1 TO 31415.926e-4 DO
         BEGIN
             writeln('Hello, world.');
         END;

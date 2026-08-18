@@ -10,9 +10,19 @@ namespace LanguageWorkbench.Cli.Listeners;
 /// </summary>
 public sealed class ParserMessageListener : IMessageListener
 {
-    private const string TokenFormat = ">>> {0,-15} line={1:D3}, pos={2,2}, text=\"{3}\"";
-    private const string ValueFormat = ">>>                 value={0}";
     private const int PrefixWidth = 5;
+    private readonly List<string> _pendingTokenLines = [];
+
+    /// <summary>
+    /// Writes the token lines accumulated for the current source line.
+    /// </summary>
+    public void FlushTokens()
+    {
+        foreach (string tokenLine in _pendingTokenLines)
+            Console.WriteLine(tokenLine);
+
+        _pendingTokenLines.Clear();
+    }
 
     /// <summary>
     /// Called by the parser whenever it produces a message.
@@ -28,20 +38,25 @@ public sealed class ParserMessageListener : IMessageListener
             case MessageType.ParserSummary
                 when body is [int statementCount, int syntaxErrorCount, float elapsedTime]:
 
+                FlushTokens();
                 Console.WriteLine(
-                    $"\n{statementCount,20} source statements.\n" +
-                    $"{syntaxErrorCount,20} syntax errors.\n" +
-                    $"{elapsedTime,20:F2} seconds total parsing time.\n"
+                    $"\n{statementCount,10} source statements.\n" +
+                    $"{syntaxErrorCount,10} syntax errors.\n" +
+                    $"{elapsedTime,10:F2} seconds total parsing time."
                 );
                 break;
 
             case MessageType.Token when body is [int line, int position, ITokenType tokenType, string text, var value]:
-                Console.WriteLine(TokenFormat, tokenType, line, position, text);
+                _pendingTokenLines.Add($"  [Token] {line:D3}:{position + 1:D2}  {tokenType}: \"{text}\"");
 
-                if (value != null && tokenType == PascalTokenType.String)
-                    value = $"\"{value}\"";
+                if (value is not null)
+                {
+                    string formattedValue = tokenType == PascalTokenType.String
+                        ? $"\"{value}\""
+                        : value.ToString() ?? string.Empty;
 
-                Console.WriteLine(ValueFormat, value);
+                    _pendingTokenLines.Add($"          value: {formattedValue}");
+                }
                 break;
 
             case MessageType.SyntaxError
@@ -54,13 +69,14 @@ public sealed class ParserMessageListener : IMessageListener
                     flagBuffer.Append(' ');
 
                 // A pointer to the error followed by the error message.
-                flagBuffer.Append("^\n*** ").AppendLine(errorMessage);
+                flagBuffer.Append("^\n*** ").Append(errorMessage);
 
                 // Text, if any. of the bad token.
-                if (tokenText is not null)
-                    flagBuffer.Append(" [at \"").Append(tokenText).Append("\"]");
+                if (tokenText is string tokenTextValue && !string.IsNullOrWhiteSpace(tokenTextValue))
+                    flagBuffer.Append(" [at \"").Append(tokenTextValue).Append("\"]");
 
                 Console.WriteLine(flagBuffer.ToString());
+                FlushTokens();
                 break;
         }
     }
