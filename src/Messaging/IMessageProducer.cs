@@ -1,5 +1,8 @@
 namespace Messaging;
 
+/// <summary>
+/// Publishes messages to registered <see cref="IMessageListener"/> instances.
+/// </summary>
 public interface IMessageProducer
 {
     /// <summary>

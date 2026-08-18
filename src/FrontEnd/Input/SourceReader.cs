@@ -69,7 +69,7 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
 
         // Send a source line message containing the line number and the line text to all the listeners.
         if (_line is not null)
-            SendMessage(new Message(MessageType.SourceLine, new object[] { LineNumber, _line }));
+            SendMessage(new Message(MessageType.SourceLine, new object?[] { LineNumber, _line }));
     }
 
     /// <summary>

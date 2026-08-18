@@ -52,7 +52,7 @@ public class PascalStringToken(SourceReader source) : PascalToken(source)
             textBuffer.Append(Quote);
 
             Type = PascalTokenType.String;
-            Value =  valueBuffer.ToString();
+            Value = valueBuffer.ToString();
         }
 
         else

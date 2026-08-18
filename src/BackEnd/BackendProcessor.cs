@@ -11,8 +11,8 @@ public abstract class BackendProcessor : IMessageProducer
 {
     // MessageHandler delegate
     private static readonly MessageHandler MessageHandler;
-    protected ISymbolTable? SymbolTable;
-    protected ICode? Code;
+    protected ISymbolTable? SymbolTable { get; set; }
+    protected ICode? Code { get; set; }
 
     static BackendProcessor()
     {

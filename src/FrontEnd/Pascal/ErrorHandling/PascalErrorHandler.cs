@@ -40,7 +40,7 @@ public class PascalErrorHandler
     /// </summary>
     /// <param name="errorCode">The fatal error to report.</param>
     /// <param name="parser">The parser that publishes the diagnostic.</param>
-    public void AbortTranslation(PascalErrorCode errorCode, Parser parser)
+    public static void AbortTranslation(PascalErrorCode errorCode, Parser parser)
     {
         string fatalText = "FATAL ERROR: " + errorCode.GetMessage();
         parser.SendMessage(new(

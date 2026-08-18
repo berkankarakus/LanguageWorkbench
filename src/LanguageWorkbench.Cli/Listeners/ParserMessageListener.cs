@@ -30,20 +30,19 @@ public sealed class ParserMessageListener : IMessageListener
     /// <param name="message">The parser message to render.</param>
     public void MessageReceived(Message message)
     {
-        if (message.Body is not object[] body)
+        if (message.Body is not object?[] body)
             return;
 
         switch (message.Type)
         {
-            case MessageType.ParserSummary
-                when body is [int statementCount, int syntaxErrorCount, float elapsedTime]:
-
+            case MessageType.ParserSummary when body is [int statementCount, int syntaxErrorCount, float elapsedTime]:
                 FlushTokens();
                 Console.WriteLine(
                     $"\n{statementCount,10} source statements.\n" +
                     $"{syntaxErrorCount,10} syntax errors.\n" +
                     $"{elapsedTime,10:F2} seconds total parsing time."
                 );
+
                 break;
 
             case MessageType.Token when body is [int line, int position, ITokenType tokenType, string text, var value]:
@@ -57,6 +56,7 @@ public sealed class ParserMessageListener : IMessageListener
 
                     _pendingTokenLines.Add($"          value: {formattedValue}");
                 }
+
                 break;
 
             case MessageType.SyntaxError

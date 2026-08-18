@@ -13,26 +13,13 @@ public class BackendMessageListener : IMessageListener
     /// <param name="message">The back-end summary message to render.</param>
     public void MessageReceived(Message message)
     {
-        object[] body;
-        float elapsedTime;
-        MessageType type = message.Type;
-
-        switch (type)
+        switch (message.Type)
         {
-            case MessageType.InterpreterSummary:
-                body = (object[])message.Body;
-                int executionCount = (int)body[0];
-                int runtimeErrorCount = (int)body[1];
-                elapsedTime = (float)body[2];
-
+            case MessageType.InterpreterSummary when message.Body is object?[] and [int executionCount, int runtimeErrorCount, float elapsedTime]:
                 Console.WriteLine($"\n{executionCount,10} statements executed.\n{runtimeErrorCount,10} runtime errors.\n{elapsedTime,10:F2} seconds total execution time.");
                 break;
 
-            case MessageType.CompilerSummary:
-                body = (object[])message.Body;
-                int instructionCount = (int)body[0];
-                elapsedTime = (float)body[1];
-
+            case MessageType.CompilerSummary when message.Body is object?[] and [int instructionCount, float elapsedTime]:
                 Console.WriteLine($"\n{instructionCount,10} instructions generated.\n{elapsedTime,10:F2} seconds total code generation time.");
                 break;
         }

@@ -29,7 +29,7 @@ internal static class Program
             string flags = "";
 
             // flags
-            while(++i < args.Length && args[i][0] == '-')
+            while (++i < args.Length && args[i][0] == '-')
                 flags += args[i][1];
 
             // source path

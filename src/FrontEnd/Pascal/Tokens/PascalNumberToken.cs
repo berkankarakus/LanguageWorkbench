@@ -131,7 +131,7 @@ public class PascalNumberToken(SourceReader source) : PascalToken(source)
         // Loop over the digits to compute the float value.
         int index = 0;
 
-        while(index < digits.Length)
+        while (index < digits.Length)
             floatValue = 10 * floatValue + (digits[index++] - '0');
 
         if (exponentValue != 0)

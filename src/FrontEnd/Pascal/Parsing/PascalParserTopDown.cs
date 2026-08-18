@@ -41,7 +41,7 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
                 {
                     SendMessage(new(
                         MessageType.Token,
-                        new object?[]
+                        new[]
                         {
                             token.LineNumber,
                             token.Position,
@@ -57,7 +57,7 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
             float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
             SendMessage(new(
                 MessageType.ParserSummary,
-                new object[]
+                new object?[]
                 {
                     token.LineNumber,
                     GetErrorCount(),
@@ -68,7 +68,7 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
 
         catch (IOException)
         {
-            ErrorHandler.AbortTranslation(PascalErrorCode.IoError, this);
+            PascalErrorHandler.AbortTranslation(PascalErrorCode.IoError, this);
         }
     }
 

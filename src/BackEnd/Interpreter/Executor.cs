@@ -20,6 +20,6 @@ public class Executor : BackendProcessor
 
         SendMessage(new Message(
             MessageType.InterpreterSummary,
-            new object[] { executionCount, runtimeErrors, elapsedTime }));
+            new object?[] { executionCount, runtimeErrors, elapsedTime }));
     }
 }

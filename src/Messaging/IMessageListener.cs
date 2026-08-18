@@ -1,5 +1,8 @@
 namespace Messaging;
 
+/// <summary>
+/// Receives messages published by an <see cref="IMessageProducer"/>.
+/// </summary>
 public interface IMessageListener
 {
     /// <summary>

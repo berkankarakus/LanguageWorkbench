@@ -15,15 +15,9 @@ public sealed class SourceMessageListener(Action flushTokens) : IMessageListener
     /// <exception cref="ArgumentException">Thrown when the listener receives a non-source-line message.</exception>
     public void MessageReceived(Message message)
     {
-        MessageType type = message.Type;
-        object[] body = (object[])message.Body;
-
-        switch (type)
+        switch (message.Type)
         {
-            case MessageType.SourceLine:
-                int lineNumber = (int)body[0];
-                string lineText = (string)body[1];
-
+            case MessageType.SourceLine when message.Body is object?[] and [int lineNumber, string lineText]:
                 flushTokens();
                 Console.WriteLine($"{lineNumber,3:D3} {lineText}");
                 break;

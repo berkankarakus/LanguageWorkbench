@@ -17,6 +17,6 @@ public class CodeGenerator : BackendProcessor
         float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
         int instructionCount = 0;
 
-        SendMessage(new Message(MessageType.CompilerSummary, new object[] { instructionCount, elapsedTime }));
+        SendMessage(new Message(MessageType.CompilerSummary, new object?[] { instructionCount, elapsedTime }));
     }
 }
