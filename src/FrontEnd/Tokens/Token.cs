@@ -24,13 +24,18 @@ public class Token(SourceReader source)
         Text = char.ToString(CurrentChar());
     }
 
-    protected virtual char CurrentChar()
+    protected char CurrentChar()
     {
         return source.CurrentChar();
     }
 
-    protected virtual char PeekChar()
+    protected char PeekChar()
     {
         return source.PeekChar();
+    }
+
+    protected char NextChar()
+    {
+        return source.NextChar();
     }
 }

@@ -77,17 +77,19 @@ public sealed class PascalTokenType : ITokenType
     public static PascalTokenType UpArrow { get; } = new("^");
     public static PascalTokenType DotDot { get; } = new("..");
 
+    public static PascalTokenType ReservedWord { get; } = new("reserved word");
     public static PascalTokenType Identifier { get; } = new("identifier");
     public static PascalTokenType Integer { get; } = new("integer");
     public static PascalTokenType Real { get; } = new("real");
     public static PascalTokenType String { get; } = new("string");
     public static PascalTokenType Error { get; } = new("error");
     public static PascalTokenType EndOfFile { get; } = new("end of file");
+    public static PascalTokenType EndOfLine { get; } = new("end of line");
 
     /// <summary>
     /// Lowercase Pascal reserved words, indexed by their source text.
     /// </summary>
-    public static IReadOnlySet<string> ReservedWords { get; } = new HashSet<string>(StringComparer.Ordinal)
+    public static IReadOnlySet<string> ReservedWords { get; } = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
         And.Text,
         Array.Text,
@@ -157,5 +159,32 @@ public sealed class PascalTokenType : ITokenType
         [DotDot.Text] = DotDot
     };
 
-    public override string ToString() => Text;
+    public override string ToString() => Text switch
+    {
+        "+" => "plus",
+        "-" => "minus",
+        "*" => "asterisk",
+        "/" => "slash",
+        ":=" => "colon equals",
+        "." => "period",
+        "," => "comma",
+        ";" => "semicolon",
+        ":" => "colon",
+        "'" => "quote",
+        "=" => "equals",
+        "<>" => "not equals",
+        "<" => "less than",
+        "<=" => "less than or equals",
+        ">=" => "greater than or equals",
+        ">" => "greater than",
+        "(" => "left parenthesis",
+        ")" => "right parenthesis",
+        "[" => "left bracket",
+        "]" => "right bracket",
+        "{" => "left brace",
+        "}" => "right brace",
+        "^" => "up arrow",
+        ".." => "dot dot",
+        _ => Text
+    };
 }

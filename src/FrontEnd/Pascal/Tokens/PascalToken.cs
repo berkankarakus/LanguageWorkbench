@@ -6,5 +6,10 @@ namespace FrontEnd.Pascal.Tokens;
 /// <summary>
 /// Base class for Pascal token classes.
 /// </summary>
-/// <param name="source"></param>
-public abstract class PascalToken(SourceReader source) : Token(source);
+public abstract class PascalToken(SourceReader source) : Token(source)
+{
+    /// <summary>
+    /// Extracts this token after its derived instance has been constructed.
+    /// </summary>
+    internal void ExtractToken() => Extract();
+}

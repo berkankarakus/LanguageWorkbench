@@ -9,19 +9,14 @@ namespace FrontEnd.Scanning;
 /// <remarks>
 /// Language-specific scanners derive from this class and implement token extraction.
 /// </remarks>
-public abstract class Scanner
+public abstract class Scanner(SourceReader source)
 {
     private Token? _currentToken;
 
     /// <summary>
     /// Gets the source reader scanned by this scanner.
     /// </summary>
-    protected SourceReader Source { get; }
-
-    protected Scanner(SourceReader source)
-    {
-        Source = source;
-    }
+    protected SourceReader Source { get; } = source;
 
     /// <summary>
     /// Gets the most recently extracted token.
@@ -46,9 +41,6 @@ public abstract class Scanner
     /// Extracts the next token from the source.
     /// </summary>
     /// <returns>The extracted token.</returns>
-    /// <exception cref="NotImplementedException">
-    /// Thrown when a derived scanner does not provide an implementation.
-    /// </exception>
     protected abstract Token ExtractToken();
 
     /// <summary>
@@ -64,7 +56,7 @@ public abstract class Scanner
     /// Advances the source and returns its next character.
     /// </summary>
     /// <returns>The next character.</returns>
-    public char NextChar()
+    protected char NextChar()
     {
         return Source.NextChar();
     }

@@ -19,24 +19,35 @@ public class PascalScanner(SourceReader source) : Scanner(source)
         SkipWhitespace();
         char currentChar = CurrentChar();
 
-        if (currentChar == SourceReader.EndOfFile)
-            return new EofToken(Source, PascalTokenType.EndOfFile);
+        switch (currentChar)
+        {
+            case SourceReader.EndOfLine:
+                return new EolToken(Source, PascalTokenType.EndOfLine);
+            case SourceReader.EndOfFile:
+                return new EofToken(Source, PascalTokenType.EndOfFile);
+        }
 
         if (char.IsLetter(currentChar))
-            return new PascalWordToken(Source);
+            return CreateExtractedToken(new PascalWordToken(Source));
 
         if (char.IsDigit(currentChar))
-            return new PascalNumberToken(Source);
+            return CreateExtractedToken(new PascalNumberToken(Source));
 
         if (currentChar == '\'')
-            return new PascalStringToken(Source);
+            return CreateExtractedToken(new PascalStringToken(Source));
 
         if (PascalTokenType.SpecialSymbols.ContainsKey(currentChar.ToString()))
-            return new PascalSpecialSymbolToken(Source);
+            return CreateExtractedToken(new PascalSpecialSymbolToken(Source));
 
         Token token = new PascalErrorToken(Source, PascalErrorCode.InvalidCharacter, currentChar.ToString());
         NextChar();
 
+        return token;
+    }
+
+    private static PascalToken CreateExtractedToken(PascalToken token)
+    {
+        token.ExtractToken();
         return token;
     }
 

@@ -7,7 +7,7 @@ namespace FrontEnd.Input;
 /// </summary>
 public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposable
 {
-    private const char EndOfLine = '\n';
+    public const char EndOfLine = '\n';
     public const char EndOfFile = '\0';
 
     private static readonly MessageHandler MessageHandler = new();
@@ -18,29 +18,30 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
 
     public char CurrentChar()
     {
-        // First time?
         if (CurrentPosition == -2)
-        {
             ReadLine();
-            return NextChar();
-        }
 
         if (_line is null)
             return EndOfFile;
 
-        if (CurrentPosition != -1 && CurrentPosition != _line.Length)
-            return _line[CurrentPosition++];
+        if (CurrentPosition < _line.Length)
+            return _line[CurrentPosition];
 
-        ReadLine();
-
-        return _line is null
-            ? EndOfFile
-            : EndOfLine;
+        return EndOfLine;
     }
 
     public char NextChar()
     {
-        ++CurrentPosition;
+        if (_line is null)
+            return EndOfFile;
+
+        if (CurrentPosition < _line.Length)
+        {
+            ++CurrentPosition;
+            return CurrentChar();
+        }
+
+        ReadLine();
         return CurrentChar();
     }
 
