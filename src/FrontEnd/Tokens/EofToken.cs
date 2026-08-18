@@ -2,6 +2,9 @@ using FrontEnd.Input;
 
 namespace FrontEnd.Tokens;
 
+/// <summary>
+/// Represents the end of a source stream.
+/// </summary>
 public class EofToken(SourceReader source) : Token(source)
 {
     public EofToken(SourceReader source, ITokenType tokenType) : this(source)

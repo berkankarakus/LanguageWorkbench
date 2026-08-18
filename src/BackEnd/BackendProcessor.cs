@@ -25,9 +25,8 @@ public abstract class BackendProcessor : IMessageProducer
     /// <remarks>
     /// To be implemented by a compiler or an interpreter subclass.
     /// </remarks>
-    /// <param name="iCode">the intermediate code</param>
-    /// <param name="symbolTable">the symbol table</param>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <param name="iCode">The intermediate code to process.</param>
+    /// <param name="symbolTable">The symbol table produced by the front end.</param>
     public abstract void Process(ICode iCode, ISymbolTable symbolTable);
 
     public void AddMessageListener(IMessageListener listener)

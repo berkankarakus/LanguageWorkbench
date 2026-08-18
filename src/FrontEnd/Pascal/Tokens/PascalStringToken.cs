@@ -5,12 +5,13 @@ using FrontEnd.Pascal.ErrorHandling;
 namespace FrontEnd.Pascal.Tokens;
 
 /// <summary>
-/// Placeholder for a Pascal string literal token.
+/// Represents a Pascal string literal token.
 /// </summary>
 public class PascalStringToken(SourceReader source) : PascalToken(source)
 {
     private const char Quote = '\'';
 
+    /// <inheritdoc />
     protected override void Extract()
     {
         StringBuilder textBuffer = new();

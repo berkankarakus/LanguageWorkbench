@@ -11,8 +11,7 @@ public class MessageHandler
     /// <summary>
     /// Add a listener to the listeners list.
     /// </summary>
-    /// <param name="listener">the listener to add</param>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <param name="listener">The listener to add.</param>
     public void AddListener(IMessageListener listener)
     {
         _listeners.Add(listener);
@@ -21,7 +20,7 @@ public class MessageHandler
     /// <summary>
     /// Remove a listener from the listener list.
     /// </summary>
-    /// <param name="listener">the listener to remove</param>
+    /// <param name="listener">The listener to remove.</param>
     public void RemoveListener(IMessageListener listener)
     {
         _listeners.Remove(listener);
@@ -30,7 +29,7 @@ public class MessageHandler
     /// <summary>
     /// Notify listeners after setting the message.
     /// </summary>
-    /// <param name="message">the message to set</param>
+    /// <param name="message">The message to publish.</param>
     public void SendMessage(Message message)
     {
         _message = message;

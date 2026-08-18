@@ -7,7 +7,10 @@ namespace FrontEnd.Input;
 /// </summary>
 public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposable
 {
+    /// <summary>Marks the end of a source line.</summary>
     public const char EndOfLine = '\n';
+
+    /// <summary>Marks the end of the source stream.</summary>
     public const char EndOfFile = '\0';
 
     private static readonly MessageHandler MessageHandler = new();
@@ -16,6 +19,10 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
     public int LineNumber { get; private set; }
     public int CurrentPosition { get; private set; } = -2;
 
+    /// <summary>
+    /// Gets the current source character without advancing the reader.
+    /// </summary>
+    /// <returns>The current character, <see cref="EndOfLine"/>, or <see cref="EndOfFile"/>.</returns>
     public char CurrentChar()
     {
         if (CurrentPosition == -2)
@@ -30,6 +37,10 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
         return EndOfLine;
     }
 
+    /// <summary>
+    /// Advances the reader and returns the new current character.
+    /// </summary>
+    /// <returns>The next character, <see cref="EndOfLine"/>, or <see cref="EndOfFile"/>.</returns>
     public char NextChar()
     {
         if (_line is null)
@@ -46,7 +57,7 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
     }
 
     /// <summary>
-    /// Read the next source line.
+    /// Reads the next source line and publishes a <see cref="MessageType.SourceLine"/> message.
     /// </summary>
     private void ReadLine()
     {
@@ -62,9 +73,9 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
     }
 
     /// <summary>
-    /// TODO
+    /// Returns the character after the current character without advancing the reader.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The next character, <see cref="EndOfLine"/>, or <see cref="EndOfFile"/>.</returns>
     public char PeekChar()
     {
         CurrentChar();
@@ -94,28 +105,27 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
     }
 
     /// <summary>
-    /// Add a parser message listener.
+    /// Adds a source-message listener.
     /// </summary>
-    /// <param name="listener"></param>
+    /// <param name="listener">The listener to add.</param>
     public void AddMessageListener(IMessageListener listener)
     {
         MessageHandler.AddListener(listener);
     }
 
     /// <summary>
-    /// Remove a parser message listener.
+    /// Removes a source-message listener.
     /// </summary>
-    /// <param name="listener"></param>
+    /// <param name="listener">The listener to remove.</param>
     public void RemoveMessageListener(IMessageListener listener)
     {
         MessageHandler.RemoveListener(listener);
     }
 
     /// <summary>
-    /// Notify listeners after setting the message.
+    /// Publishes a source message to registered listeners.
     /// </summary>
-    /// <param name="message"></param>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <param name="message">The message to publish.</param>
     public void SendMessage(Message message)
     {
         MessageHandler.SendMessage(message);

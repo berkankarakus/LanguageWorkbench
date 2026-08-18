@@ -17,6 +17,6 @@ public interface IMessageProducer
     /// <summary>
     /// Notify listeners after setting the message.
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="message">The message to publish to registered listeners.</param>
     public void SendMessage(Message message);
 }

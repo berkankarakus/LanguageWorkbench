@@ -15,9 +15,9 @@ public class PascalErrorHandler
     /// <summary>
     /// Flag an error in the source file.
     /// </summary>
-    /// <param name="token"></param>
-    /// <param name="errorCode"></param>
-    /// <param name="parser"></param>
+    /// <param name="token">The token associated with the error.</param>
+    /// <param name="errorCode">The error to report.</param>
+    /// <param name="parser">The parser that publishes the diagnostic.</param>
     public void Flag(Token token, PascalErrorCode errorCode, Parser parser)
     {
         parser.SendMessage(new(
@@ -35,6 +35,11 @@ public class PascalErrorHandler
             AbortTranslation(PascalErrorCode.TooManyErrors, parser);
     }
 
+    /// <summary>
+    /// Reports a fatal error and terminates the translation process.
+    /// </summary>
+    /// <param name="errorCode">The fatal error to report.</param>
+    /// <param name="parser">The parser that publishes the diagnostic.</param>
     public void AbortTranslation(PascalErrorCode errorCode, Parser parser)
     {
         string fatalText = "FATAL ERROR: " + errorCode.GetMessage();

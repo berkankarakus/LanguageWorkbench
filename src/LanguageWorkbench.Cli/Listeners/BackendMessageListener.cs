@@ -10,7 +10,7 @@ public class BackendMessageListener : IMessageListener
     /// <summary>
     /// Called by the back-end whenever it produces a message.
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="message">The back-end summary message to render.</param>
     public void MessageReceived(Message message)
     {
         object[] body;

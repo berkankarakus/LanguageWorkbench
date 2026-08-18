@@ -4,12 +4,12 @@ using FrontEnd.Pascal.ErrorHandling;
 namespace FrontEnd.Pascal.Tokens;
 
 /// <summary>
-/// Placeholder for a Pascal special-symbol token.
+/// Represents a Pascal punctuation or operator token.
 /// </summary>
 public class PascalSpecialSymbolToken(SourceReader source) : PascalToken(source)
 {
     /// <summary>
-    /// Extract a Pascal special symbol token form the source.
+    /// Extracts a Pascal special symbol from the source.
     /// </summary>
     protected override void Extract()
     {

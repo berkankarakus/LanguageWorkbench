@@ -11,7 +11,7 @@ namespace FrontEnd.Pascal.Parsing;
 /// <summary>
 /// The top-down Pascal parser.
 /// </summary>
-/// <param name="scanner"></param>
+/// <param name="scanner">The scanner that supplies Pascal tokens.</param>
 public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
 {
     private static readonly PascalErrorHandler ErrorHandler = new();
@@ -73,9 +73,9 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
     }
 
     /// <summary>
-    /// Return the number of syntax errors found by the parser.
+    /// Returns the number of syntax errors found while parsing.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The number of reported syntax errors.</returns>
     public override int GetErrorCount()
     {
         return ErrorHandler.ErrorCount;

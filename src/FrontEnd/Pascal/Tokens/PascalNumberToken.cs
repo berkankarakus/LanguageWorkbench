@@ -5,12 +5,12 @@ using FrontEnd.Pascal.ErrorHandling;
 namespace FrontEnd.Pascal.Tokens;
 
 /// <summary>
-/// Placeholder for a Pascal numeric literal token.
+/// Represents a Pascal integer or real numeric literal token.
 /// </summary>
 public class PascalNumberToken(SourceReader source) : PascalToken(source)
 {
     /// <summary>
-    /// Extract a Pascal number token from the source.
+    /// Extracts a Pascal numeric literal from the source.
     /// </summary>
     protected override void Extract()
     {
@@ -20,9 +20,9 @@ public class PascalNumberToken(SourceReader source) : PascalToken(source)
     }
 
     /// <summary>
-    /// Extract a Pascal number token from the source.
+    /// Extracts the components of a Pascal numeric literal.
     /// </summary>
-    /// <returns></returns>
+    /// <param name="textBuffer">Receives the source text of the numeric literal.</param>
     private void ExtractNumber(StringBuilder textBuffer)
     {
         string? fractionalDigits = null; // digits after the decimal point
@@ -62,7 +62,7 @@ public class PascalNumberToken(SourceReader source) : PascalToken(source)
         }
 
         // Is there an exponent?
-        // There cannot be an exponen if we saw a ".." token.
+        // There cannot be an exponent if we saw a ".." token.
         currentChar = CurrentChar();
 
         if (!sawDotDot && currentChar is 'E' or 'e')
@@ -104,13 +104,13 @@ public class PascalNumberToken(SourceReader source) : PascalToken(source)
     }
 
     /// <summary>
-    /// Compute & return the float value of real number.
+    /// Computes the <see cref="double"/> value of a real number literal.
     /// </summary>
-    /// <param name="wholeDigits"></param>
-    /// <param name="fractionalDigits"></param>
-    /// <param name="exponentDigits"></param>
-    /// <param name="exponentSign"></param>
-    /// <returns></returns>
+    /// <param name="wholeDigits">Digits before the decimal point.</param>
+    /// <param name="fractionalDigits">Digits after the decimal point, if present.</param>
+    /// <param name="exponentDigits">Exponent digits, if present.</param>
+    /// <param name="exponentSign">The exponent sign.</param>
+    /// <returns>The parsed real value, or zero when parsing sets an error token type.</returns>
     private double ComputeFloatValue(string wholeDigits, string? fractionalDigits, string? exponentDigits, char exponentSign)
     {
         double floatValue = 0.0;
@@ -148,10 +148,10 @@ public class PascalNumberToken(SourceReader source) : PascalToken(source)
     }
 
     /// <summary>
-    /// Compute & return the integer value of a string of digits.
+    /// Computes the integer value represented by a sequence of digits.
     /// </summary>
-    /// <param name="digits"></param>
-    /// <returns></returns>
+    /// <param name="digits">The decimal digits to convert.</param>
+    /// <returns>The parsed integer value, or zero when the input is null or out of range.</returns>
     private int ComputeIntegerValue(string? digits)
     {
         // Return 0 if no digits.
@@ -181,10 +181,10 @@ public class PascalNumberToken(SourceReader source) : PascalToken(source)
     }
 
     /// <summary>
-    /// Extract & return the digits of an unsigned integer.
+    /// Extracts the digits of an unsigned integer component.
     /// </summary>
-    /// <param name="textBuffer"></param>
-    /// <returns></returns>
+    /// <param name="textBuffer">Receives the source text of the numeric literal.</param>
+    /// <returns>The extracted digits, or <see langword="null"/> when no digit is present.</returns>
     private string? UnsignedIntegerDigits(StringBuilder textBuffer)
     {
         char currentChar = CurrentChar();

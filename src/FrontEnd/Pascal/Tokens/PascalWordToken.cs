@@ -3,10 +3,13 @@ using FrontEnd.Input;
 
 namespace FrontEnd.Pascal.Tokens;
 
+/// <summary>
+/// Represents a Pascal identifier or reserved word.
+/// </summary>
 public class PascalWordToken(SourceReader source) : PascalToken(source)
 {
     /// <summary>
-    /// Extract a Pascal word token from a source.
+    /// Extracts an identifier or reserved word from the source.
     /// </summary>
     protected override void Extract()
     {

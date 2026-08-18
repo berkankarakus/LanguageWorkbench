@@ -5,13 +5,14 @@ namespace LanguageWorkbench.Cli.Listeners;
 /// <summary>
 /// Writes source lines received from the front end to the console.
 /// </summary>
+/// <param name="flushTokens">Flushes token output before the next source line is written.</param>
 public sealed class SourceMessageListener(Action flushTokens) : IMessageListener
 {
     /// <summary>
     /// Called by the source whenever it produces a message.
     /// </summary>
-    /// <param name="message"></param>
-    /// <exception cref="ArgumentException"></exception>
+    /// <param name="message">The source-line message to render.</param>
+    /// <exception cref="ArgumentException">Thrown when the listener receives a non-source-line message.</exception>
     public void MessageReceived(Message message)
     {
         MessageType type = message.Type;

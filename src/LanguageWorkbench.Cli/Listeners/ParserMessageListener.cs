@@ -27,7 +27,7 @@ public sealed class ParserMessageListener : IMessageListener
     /// <summary>
     /// Called by the parser whenever it produces a message.
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="message">The parser message to render.</param>
     public void MessageReceived(Message message)
     {
         if (message.Body is not object[] body)

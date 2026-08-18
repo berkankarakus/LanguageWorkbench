@@ -67,7 +67,7 @@ public abstract class Parser(Scanner scanner) : IMessageProducer
     /// <summary>
     /// Add a parser message listener.
     /// </summary>
-    /// <param name="listener"></param>
+    /// <param name="listener">The listener to add.</param>
     public void AddMessageListener(IMessageListener listener)
     {
         MessageHandler.AddListener(listener);
@@ -76,7 +76,7 @@ public abstract class Parser(Scanner scanner) : IMessageProducer
     /// <summary>
     /// Remove a parser message listener.
     /// </summary>
-    /// <param name="listener"></param>
+    /// <param name="listener">The listener to remove.</param>
     public void RemoveMessageListener(IMessageListener listener)
     {
         MessageHandler.RemoveListener(listener);
@@ -85,7 +85,7 @@ public abstract class Parser(Scanner scanner) : IMessageProducer
     /// <summary>
     /// Notify listeners after setting the message.
     /// </summary>
-    /// <param name="message"></param>
+    /// <param name="message">The message to publish.</param>
     public void SendMessage(Message message)
     {
         MessageHandler.SendMessage(message);
