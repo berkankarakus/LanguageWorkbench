@@ -19,3 +19,7 @@ dotnet_diagnostic.CA1720.severity = none
 dotnet_style_prefer_collection_expression = true:suggestion
 dotnet_style_prefer_primary_constructors = true:suggestion
 csharp_style_namespace_declarations = file_scoped:suggestion
+
+# This interface models a symbol-table stack; its domain-specific name is intentional.
+[src/Intermediate/Symbols/{SymbolTableStack,ISymbolTableStack}.cs]
+dotnet_diagnostic.CA1711.severity = none

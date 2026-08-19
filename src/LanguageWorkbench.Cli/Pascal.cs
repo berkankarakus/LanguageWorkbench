@@ -61,7 +61,7 @@ public class Pascal
 
             parser.Parse();
             ICode iCode = parser.Code;
-            ISymbolTable symbolTable = parser.SymbolTable;
+            ISymbolTable symbolTable = Parser.SymbolTable;
             backEnd.Process(iCode, symbolTable);
         }
 
