@@ -38,7 +38,7 @@ public class SymbolTableStack : ISymbolTableStack
     }
 
     /// <inheritdoc />
-    public SymbolTableEntry LookupLocal(string name)
+    public SymbolTableEntry? LookupLocal(string name)
     {
         return _symbolTable[_currentNestingLevel].Lookup(name);
     }

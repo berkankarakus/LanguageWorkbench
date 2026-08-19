@@ -11,7 +11,7 @@ namespace Backend.Interpreter;
 public class Executor : BackendProcessor
 {
     /// <inheritdoc />
-    public override void Process(ICode iCode, ISymbolTable symbolTable)
+    public override void Process(ICode iCode, ISymbolTableStack symbolTableStack)
     {
         long startTime = Stopwatch.GetTimestamp();
         float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;

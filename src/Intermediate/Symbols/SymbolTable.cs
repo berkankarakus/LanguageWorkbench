@@ -29,9 +29,9 @@ public sealed class SymbolTable(int nestingLevel) : ISymbolTable
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public SymbolTableEntry Lookup(string name)
+    public SymbolTableEntry? Lookup(string name)
     {
-        return _entries[name];
+        return _entries.GetValueOrDefault(name);
     }
 
     /// <inheritdoc />

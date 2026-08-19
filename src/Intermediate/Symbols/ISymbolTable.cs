@@ -23,7 +23,7 @@ public interface ISymbolTable
     /// </summary>
     /// <param name="name">The source-level name of the symbol.</param>
     /// <returns>The matching entry.</returns>
-    SymbolTableEntry Lookup(string name);
+    SymbolTableEntry? Lookup(string name);
 
     /// <summary>
     /// Gets the entries in ascending name order.

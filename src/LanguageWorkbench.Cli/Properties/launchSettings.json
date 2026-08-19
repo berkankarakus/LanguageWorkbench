@@ -3,10 +3,11 @@
   "profiles": {
     "LanguageWorkbench.Cli": {
       "commandName": "Project",
-      "commandLineArgs": "compile hello.pas",
+      "commandLineArgs": "compile -x newton.pas",
       "workingDirectory": "$(ProjectDir)",
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "Development",
+        "LANGUAGE_WORKBENCH_SHOW_TOKENS": "false"
       }
     }
   }

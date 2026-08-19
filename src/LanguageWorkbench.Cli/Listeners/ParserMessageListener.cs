@@ -8,7 +8,8 @@ namespace LanguageWorkbench.Cli.Listeners;
 /// <summary>
 /// Writes parser diagnostics and summary information to the console.
 /// </summary>
-public sealed class ParserMessageListener : IMessageListener
+/// <param name="showTokens">Whether token information should be written.</param>
+public sealed class ParserMessageListener(bool showTokens) : IMessageListener
 {
     private const int PrefixWidth = 5;
     private readonly List<string> _pendingTokenLines = [];
@@ -45,7 +46,7 @@ public sealed class ParserMessageListener : IMessageListener
 
                 break;
 
-            case MessageType.Token when body is [int line, int position, ITokenType tokenType, string text, var value]:
+            case MessageType.Token when showTokens && body is [int line, int position, ITokenType tokenType, string text, var value]:
                 _pendingTokenLines.Add($"  [Token] {line:D3}:{position + 1:D2}  {tokenType}: \"{text}\"");
 
                 if (value is not null)

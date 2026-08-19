@@ -35,7 +35,7 @@ dotnet run --project src/LanguageWorkbench.Cli -- compile src/LanguageWorkbench.
 dotnet run --project src/LanguageWorkbench.Cli -- execute src/LanguageWorkbench.Cli/hello.pas
 ```
 
-The `-i` and `-x` flags are accepted by the CLI for future interpreter and cross-reference output.
+Use `-x` to print the symbol-table cross-reference. Set `LANGUAGE_WORKBENCH_SHOW_TOKENS=true` (or `1`) to include token output.
 
 ## Output
 

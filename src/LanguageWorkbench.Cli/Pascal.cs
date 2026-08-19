@@ -11,8 +11,10 @@ namespace LanguageWorkbench.Cli;
 
 public class Pascal
 {
+    private const string ShowTokensEnvironmentVariable = "LANGUAGE_WORKBENCH_SHOW_TOKENS";
     private readonly string _operation;
     private readonly string _filePath;
+    private readonly bool _crossReference;
 
     /// <summary>
     /// Configures a Pascal translation request.
@@ -31,6 +33,7 @@ public class Pascal
 
         _operation = operation;
         _filePath = filePath;
+        _crossReference = flags.Contains('x');
     }
 
     /// <summary>
@@ -49,7 +52,7 @@ public class Pascal
         try
         {
             using var source = new SourceReader(File.OpenText(_filePath));
-            ParserMessageListener parserMessageListener = new();
+            ParserMessageListener parserMessageListener = new(ShouldShowTokens());
             source.AddMessageListener(new SourceMessageListener(parserMessageListener.FlushTokens));
 
             PascalFrontEndFactory<PascalParserTopDown> factory = new(scanner => new PascalParserTopDown(scanner));
@@ -61,8 +64,12 @@ public class Pascal
 
             parser.Parse();
             ICode iCode = parser.Code;
-            ISymbolTable symbolTable = Parser.SymbolTable;
-            backEnd.Process(iCode, symbolTable);
+            ISymbolTableStack symbolTableStack = Parser.SymbolTableStack;
+
+            if (_crossReference)
+                CrossReferencer.Print(symbolTableStack);
+
+            backEnd.Process(iCode, symbolTableStack);
         }
 
         catch (Exception e)
@@ -72,5 +79,11 @@ public class Pascal
 
             throw;
         }
+    }
+
+    private static bool ShouldShowTokens()
+    {
+        string? value = Environment.GetEnvironmentVariable(ShowTokensEnvironmentVariable);
+        return value == "1" || string.Equals(value, "true", StringComparison.OrdinalIgnoreCase);
     }
 }

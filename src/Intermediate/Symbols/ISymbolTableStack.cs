@@ -29,7 +29,7 @@ public interface ISymbolTableStack
     /// </summary>
     /// <param name="name">The source-level name of the symbol.</param>
     /// <returns>The matching symbol entry.</returns>
-    SymbolTableEntry LookupLocal(string name);
+    SymbolTableEntry? LookupLocal(string name);
 
     /// <summary>
     /// Finds a symbol by name in the current scope or one of its enclosing scopes.

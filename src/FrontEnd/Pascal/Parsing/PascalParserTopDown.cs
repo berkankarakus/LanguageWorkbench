@@ -4,6 +4,7 @@ using FrontEnd.Pascal.Tokens;
 using FrontEnd.Parsing;
 using FrontEnd.Scanning;
 using FrontEnd.Tokens;
+using Intermediate.Symbols;
 using Messaging;
 
 namespace FrontEnd.Pascal.Parsing;
@@ -31,10 +32,51 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
                 token = NextToken();
                 ITokenType? tokenType = token.Type;
 
+                try
+                {
+                    // cross-reference only the identifiers.
+                    if (tokenType == PascalTokenType.Identifier)
+                    {
+                        string? name = token.Text?.ToLowerInvariant();
+
+                        // If it's not already in the symbol table, create & enter a new entry for the identifier.
+                        if (!string.IsNullOrEmpty(name))
+                        {
+                            SymbolTableEntry entry =
+                                SymbolTableStack.Lookup(name)
+                                ?? SymbolTableStack.EnterLocal(name);
+
+                            entry.AppendLineNumber(token.LineNumber);
+                        }
+
+                        else if (tokenType == PascalTokenType.Error && token.Value != null)
+                            ErrorHandler.Flag(token, (PascalErrorCode)token.Value, parser: this);
+                    }
+
+                    double tokenElapsedTime = Stopwatch.GetElapsedTime(startTime).TotalSeconds;
+                    SendMessage(new(
+                        MessageType.ParserSummary,
+                        new object?[]
+                        {
+                            token.LineNumber,
+                            GetErrorCount(),
+                            tokenElapsedTime
+                        })
+                    );
+                }
+
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.StackTrace);
+
+                    PascalErrorHandler.AbortTranslation(PascalErrorCode.IoError, parser: this);
+                }
+
                 if (tokenType is null || tokenType == PascalTokenType.Error)
                 {
                     if (token.Value is PascalErrorCode errorCode)
-                        ErrorHandler.Flag(token, errorCode, this);
+                        ErrorHandler.Flag(token, errorCode, parser: this);
                 }
 
                 else
