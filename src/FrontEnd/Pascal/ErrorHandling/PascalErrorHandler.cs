@@ -27,7 +27,7 @@ public class PascalErrorHandler
                 token.LineNumber,
                 token.Position,
                 token.Text,
-                errorCode.GetMessage()
+                errorCode.Message
             })
         );
 
@@ -42,7 +42,7 @@ public class PascalErrorHandler
     /// <param name="parser">The parser that publishes the diagnostic.</param>
     public static void AbortTranslation(PascalErrorCode errorCode, Parser parser)
     {
-        string fatalText = "FATAL ERROR: " + errorCode.GetMessage();
+        string fatalText = "FATAL ERROR: " + errorCode.Message;
         parser.SendMessage(new(
             MessageType.SyntaxError,
             new object?[]
@@ -54,6 +54,6 @@ public class PascalErrorHandler
             })
         );
 
-        Environment.Exit(errorCode.GetStatus());
+        Environment.Exit(errorCode.Status);
     }
 }

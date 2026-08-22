@@ -72,20 +72,22 @@ public enum PascalErrorCode
 /// </summary>
 public static class PascalErrorCodeExtensions
 {
-    /// <summary>
-    /// Gets the process exit status associated with an error code.
-    /// </summary>
-    public static int GetStatus(this PascalErrorCode errorCode)
+    extension(PascalErrorCode errorCode)
     {
-        return (int)errorCode;
+        /// <summary>
+        /// Gets the process exit status associated with an error code.
+        /// </summary>
+        public int Status => (int)errorCode;
+
+        /// <summary>
+        /// Gets the diagnostic message for an error code.
+        /// </summary>
+        public string Message => MessageFor(errorCode);
     }
 
-    /// <summary>
-    /// Gets the diagnostic message for an error code.
-    /// </summary>
-    public static string GetMessage(this PascalErrorCode errorCode)
+    private static string MessageFor(PascalErrorCode code)
     {
-        return errorCode switch
+        return code switch
         {
             PascalErrorCode.AlreadyForwarded => "Already specified in FORWARD",
             PascalErrorCode.IdentifierRedefined => "Redefined identifier",
