@@ -1,4 +1,4 @@
-namespace Intermediate.Symbols;
+namespace Intermediate.Symbols.Interfaces;
 
 /// <summary>
 /// Identifies an attribute stored on a symbol-table entry.

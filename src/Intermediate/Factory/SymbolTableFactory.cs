@@ -1,4 +1,5 @@
-using Intermediate.Symbols;
+using Intermediate.Symbols.Implementations;
+using Intermediate.Symbols.Interfaces;
 
 namespace Intermediate.Factory;
 

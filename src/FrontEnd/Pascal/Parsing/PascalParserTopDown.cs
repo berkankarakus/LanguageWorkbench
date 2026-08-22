@@ -4,7 +4,7 @@ using FrontEnd.Pascal.Tokens;
 using FrontEnd.Parsing;
 using FrontEnd.Scanning;
 using FrontEnd.Tokens;
-using Intermediate.Symbols;
+using Intermediate.Symbols.Interfaces;
 using Messaging;
 
 namespace FrontEnd.Pascal.Parsing;
@@ -42,7 +42,7 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
                         // If it's not already in the symbol table, create & enter a new entry for the identifier.
                         if (!string.IsNullOrEmpty(name))
                         {
-                            SymbolTableEntry entry =
+                            ISymbolTableEntry entry =
                                 SymbolTableStack.Lookup(name)
                                 ?? SymbolTableStack.EnterLocal(name);
 
@@ -53,13 +53,13 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
                             ErrorHandler.Flag(token, (PascalErrorCode)token.Value, parser: this);
                     }
 
-                    double tokenElapsedTime = Stopwatch.GetElapsedTime(startTime).TotalSeconds;
+                    float tokenElapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
                     SendMessage(new(
                         MessageType.ParserSummary,
                         new object?[]
                         {
                             token.LineNumber,
-                            GetErrorCount(),
+                            ErrorCount,
                             tokenElapsedTime
                         })
                     );
@@ -102,7 +102,7 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
                 new object?[]
                 {
                     token.LineNumber,
-                    GetErrorCount(),
+                    ErrorCount,
                     elapsedTime
                 })
             );
@@ -115,11 +115,7 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
     }
 
     /// <summary>
-    /// Returns the number of syntax errors found while parsing.
+    /// Gets the number of syntax errors found while parsing.
     /// </summary>
-    /// <returns>The number of reported syntax errors.</returns>
-    public override int GetErrorCount()
-    {
-        return ErrorHandler.ErrorCount;
-    }
+    public override int ErrorCount => ErrorHandler.ErrorCount;
 }

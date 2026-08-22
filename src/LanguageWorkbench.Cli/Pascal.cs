@@ -3,8 +3,9 @@ using FrontEnd.Input;
 using FrontEnd.Parsing;
 using FrontEnd.Pascal.Factory;
 using FrontEnd.Pascal.Parsing;
-using Intermediate.Code;
+using Intermediate.Code.Interfaces;
 using Intermediate.Symbols;
+using Intermediate.Symbols.Interfaces;
 using LanguageWorkbench.Cli.Listeners;
 
 namespace LanguageWorkbench.Cli;
@@ -63,7 +64,7 @@ public class Pascal
             backEnd.AddMessageListener(new BackendMessageListener());
 
             parser.Parse();
-            ICode iCode = parser.Code;
+            IIntermediateCode iCode = parser.Code;
             ISymbolTableStack symbolTableStack = Parser.SymbolTableStack;
 
             if (_crossReference)

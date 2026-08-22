@@ -1,6 +1,7 @@
 using Intermediate.Factory;
+using Intermediate.Symbols.Interfaces;
 
-namespace Intermediate.Symbols;
+namespace Intermediate.Symbols.Implementations;
 
 /// <summary>
 /// Represents the stack of symbol tables used to model nested lexical scopes.
@@ -20,31 +21,25 @@ public class SymbolTableStack : ISymbolTableStack
     }
 
     /// <inheritdoc />
-    public int GetCurrentNestingLevel()
-    {
-        return _currentNestingLevel;
-    }
+    public int CurrentNestingLevel => _currentNestingLevel;
 
     /// <inheritdoc />
-    public ISymbolTable GetLocalSymbolTable()
-    {
-        return _symbolTable[_currentNestingLevel];
-    }
+    public ISymbolTable LocalSymbolTable => _symbolTable[_currentNestingLevel];
 
     /// <inheritdoc />
-    public SymbolTableEntry EnterLocal(string name)
+    public ISymbolTableEntry EnterLocal(string name)
     {
         return _symbolTable[_currentNestingLevel].Enter(name);
     }
 
     /// <inheritdoc />
-    public SymbolTableEntry? LookupLocal(string name)
+    public ISymbolTableEntry? LookupLocal(string name)
     {
         return _symbolTable[_currentNestingLevel].Lookup(name);
     }
 
     /// <inheritdoc />
-    public SymbolTableEntry? Lookup(string name)
+    public ISymbolTableEntry? Lookup(string name)
     {
         return LookupLocal(name);
     }

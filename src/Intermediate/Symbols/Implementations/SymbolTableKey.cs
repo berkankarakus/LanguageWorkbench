@@ -1,4 +1,6 @@
-namespace Intermediate.Symbols;
+using Intermediate.Symbols.Interfaces;
+
+namespace Intermediate.Symbols.Implementations;
 
 /// <summary>
 /// Defines the attribute keys used by Pascal symbol table entries.

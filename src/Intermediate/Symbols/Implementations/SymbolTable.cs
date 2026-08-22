@@ -1,26 +1,24 @@
 using Intermediate.Factory;
+using Intermediate.Symbols.Interfaces;
 
-namespace Intermediate.Symbols;
+namespace Intermediate.Symbols.Implementations;
 
 /// <summary>
 /// Represents the symbols declared within one lexical scope.
 /// </summary>
 public sealed class SymbolTable(int nestingLevel) : ISymbolTable
 {
-    private readonly SortedDictionary<string, SymbolTableEntry> _entries = new();
+    private readonly SortedDictionary<string, ISymbolTableEntry> _entries = new();
 
     /// <inheritdoc />
-    public int GetNestingLevel()
-    {
-        return nestingLevel;
-    }
+    public int NestingLevel { get; } = nestingLevel;
 
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public SymbolTableEntry Enter(string name)
+    public ISymbolTableEntry Enter(string name)
     {
-        SymbolTableEntry entry = SymbolTableFactory.CreateSymbolTableEntry(name, symbolTable: this);
+        ISymbolTableEntry entry = SymbolTableFactory.CreateSymbolTableEntry(name, symbolTable: this);
         _entries.Add(name, entry);
 
         return entry;
@@ -29,13 +27,13 @@ public sealed class SymbolTable(int nestingLevel) : ISymbolTable
     /// <summary>
     /// <inheritdoc />
     /// </summary>
-    public SymbolTableEntry? Lookup(string name)
+    public ISymbolTableEntry? Lookup(string name)
     {
         return _entries.GetValueOrDefault(name);
     }
 
     /// <inheritdoc />
-    public List<SymbolTableEntry> SortedEntries()
+    public List<ISymbolTableEntry> SortedEntries()
     {
         return [.. _entries.Values];
     }

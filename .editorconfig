@@ -21,5 +21,8 @@ dotnet_style_prefer_primary_constructors = true:suggestion
 csharp_style_namespace_declarations = file_scoped:suggestion
 
 # This interface models a symbol-table stack; its domain-specific name is intentional.
-[src/Intermediate/Symbols/{SymbolTableStack,ISymbolTableStack}.cs]
+[src/Intermediate/Symbols/Interfaces/ISymbolTableStack.cs]
+dotnet_diagnostic.CA1711.severity = none
+
+[src/Intermediate/Symbols/Implementations/SymbolTableStack.cs]
 dotnet_diagnostic.CA1711.severity = none

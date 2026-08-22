@@ -1,3 +1,5 @@
+using Intermediate.Symbols.Interfaces;
+
 namespace Intermediate.Symbols;
 
 /// <summary>
@@ -19,7 +21,7 @@ public static class CrossReferencer
 
         Console.WriteLine("\n===== CROSS-REFERENCE TABLE =====");
         PrintColumnHeadings();
-        PrintSymbolTable(symbolTableStack.GetLocalSymbolTable());
+        PrintSymbolTable(symbolTableStack.LocalSymbolTable);
     }
 
     /// <summary>
@@ -37,11 +39,11 @@ public static class CrossReferencer
     /// <param name="symbolTable">The symbol table whose entries will be written.</param>
     private static void PrintSymbolTable(ISymbolTable symbolTable)
     {
-        foreach (SymbolTableEntry entry in symbolTable.SortedEntries())
+        foreach (ISymbolTableEntry entry in symbolTable.SortedEntries())
         {
-            Console.Write($"{entry.GetName(),-NameWidth}");
+            Console.Write($"{entry.Name,-NameWidth}");
 
-            foreach (int lineNumber in entry.GetLineNumbers())
+            foreach (int lineNumber in entry.LineNumbers)
                 Console.Write($" {lineNumber:D3}");
 
             Console.WriteLine();

@@ -1,5 +1,5 @@
-using Intermediate.Code;
-using Intermediate.Symbols;
+using Intermediate.Code.Interfaces;
+using Intermediate.Symbols.Interfaces;
 using Messaging;
 
 namespace Backend;
@@ -12,7 +12,7 @@ public abstract class BackendProcessor : IMessageProducer
     // MessageHandler delegate
     private static readonly MessageHandler MessageHandler;
     protected ISymbolTableStack? SymbolTableStack { get; set; }
-    protected ICode? Code { get; set; }
+    protected IIntermediateCode? Code { get; set; }
 
     static BackendProcessor()
     {
@@ -27,7 +27,7 @@ public abstract class BackendProcessor : IMessageProducer
     /// </remarks>
     /// <param name="iCode">The intermediate code to process.</param>
     /// <param name="symbolTableStack">The symbol-table stack produced by the front end.</param>
-    public abstract void Process(ICode iCode, ISymbolTableStack symbolTableStack);
+    public abstract void Process(IIntermediateCode iCode, ISymbolTableStack symbolTableStack);
 
     public void AddMessageListener(IMessageListener listener)
     {

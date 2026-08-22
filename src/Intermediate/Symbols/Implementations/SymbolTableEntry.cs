@@ -1,4 +1,6 @@
-namespace Intermediate.Symbols;
+using Intermediate.Symbols.Interfaces;
+
+namespace Intermediate.Symbols.Implementations;
 
 /// <summary>
 /// Represents a single entry in a symbol table.
@@ -9,16 +11,10 @@ public sealed class SymbolTableEntry(string name, ISymbolTable symbolTable) : IS
     private readonly Dictionary<ISymbolTableKey, object> _entries = new();
 
     /// <inheritdoc />
-    public string GetName()
-    {
-        return name;
-    }
+    public string Name { get; } = name;
 
     /// <inheritdoc />
-    public ISymbolTable GetSymbolTable()
-    {
-        return symbolTable;
-    }
+    public ISymbolTable SymbolTable { get; } = symbolTable;
 
     /// <inheritdoc />
     public void AppendLineNumber(int lineNumber)
@@ -27,10 +23,7 @@ public sealed class SymbolTableEntry(string name, ISymbolTable symbolTable) : IS
     }
 
     /// <inheritdoc />
-    public List<int> GetLineNumbers()
-    {
-        return _lineNumbers;
-    }
+    public List<int> LineNumbers => _lineNumbers;
 
     /// <inheritdoc />
     public void SetAttribute(ISymbolTableKey key, object value)
@@ -39,8 +32,9 @@ public sealed class SymbolTableEntry(string name, ISymbolTable symbolTable) : IS
     }
 
     /// <inheritdoc />
-    public object GetAttribute(ISymbolTableKey key)
+    public object this[ISymbolTableKey key]
     {
-        return _entries[key];
+        get => _entries[key];
+        set => _entries[key] = value;
     }
 }

@@ -1,6 +1,6 @@
 using System.Diagnostics;
-using Intermediate.Code;
-using Intermediate.Symbols;
+using Intermediate.Code.Interfaces;
+using Intermediate.Symbols.Interfaces;
 using Messaging;
 
 namespace Backend.Interpreter;
@@ -11,7 +11,7 @@ namespace Backend.Interpreter;
 public class Executor : BackendProcessor
 {
     /// <inheritdoc />
-    public override void Process(ICode iCode, ISymbolTableStack symbolTableStack)
+    public override void Process(IIntermediateCode iCode, ISymbolTableStack symbolTableStack)
     {
         long startTime = Stopwatch.GetTimestamp();
         float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
