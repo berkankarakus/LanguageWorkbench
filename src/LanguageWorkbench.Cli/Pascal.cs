@@ -4,8 +4,8 @@ using FrontEnd.Parsing;
 using FrontEnd.Pascal.Factory;
 using FrontEnd.Pascal.Parsing;
 using Intermediate.Code.Interfaces;
-using Intermediate.Symbols;
 using Intermediate.Symbols.Interfaces;
+using Intermediate.Symbols.Utilities;
 using LanguageWorkbench.Cli.Listeners;
 
 namespace LanguageWorkbench.Cli;

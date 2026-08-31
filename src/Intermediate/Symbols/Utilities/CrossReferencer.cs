@@ -1,6 +1,6 @@
 using Intermediate.Symbols.Interfaces;
 
-namespace Intermediate.Symbols;
+namespace Intermediate.Symbols.Utilities;
 
 /// <summary>
 /// Produces a cross-reference table from symbol tables.
