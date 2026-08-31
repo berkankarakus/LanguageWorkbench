@@ -4,6 +4,7 @@ using FrontEnd.Pascal.Tokens;
 using FrontEnd.Parsing;
 using FrontEnd.Scanning;
 using FrontEnd.Tokens;
+using Intermediate.Code.Interfaces;
 using Intermediate.Symbols.Interfaces;
 using Messaging;
 
@@ -15,17 +16,24 @@ namespace FrontEnd.Pascal.Parsing;
 /// <param name="scanner">The scanner that supplies Pascal tokens.</param>
 public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
 {
-    private static readonly PascalErrorHandler ErrorHandler = new();
+    protected static readonly PascalErrorHandler ErrorHandler = new();
 
     /// <summary>
-    /// Parse a Pascal source program and generate the symbol table and the intermediate code.
+    /// Creates a parser that uses the scanner of an existing parser.
     /// </summary>
-    public override void Parse()
+    /// <param name="parent">The parser whose scanner will be reused.</param>
+    public PascalParserTopDown(PascalParserTopDown parent) : this(parent.Scanner) { }
+
+    /// <summary>
+    /// Processes Pascal tokens and publishes their diagnostics and parsing summary.
+    /// </summary>
+    public void ProcessTokens()
     {
+        long startTime = Stopwatch.GetTimestamp();
+
         try
         {
             Token token;
-            long startTime = Stopwatch.GetTimestamp();
 
             do
             {
@@ -111,6 +119,62 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
         catch (IOException)
         {
             PascalErrorHandler.AbortTranslation(PascalErrorCode.IoError, this);
+        }
+    }
+
+    /// <summary>
+    /// Parses a Pascal source program and generates its intermediate code.
+    /// </summary>
+    public override void Parse()
+    {
+        long startTime = Stopwatch.GetTimestamp();
+
+        try
+        {
+            Token? token = NextToken();
+            IIntermediateCodeNode? rootNode = null;
+
+            // Look for the BEGIN token to parse a compund statement.
+            if (token.Type != PascalTokenType.Begin)
+                ErrorHandler.Flag(token, PascalErrorCode.UnexpectedToken, parser: this);
+
+            else
+            {
+                StatementParser statementParser = new(this);
+                rootNode = statementParser.Parse(token);
+                token = CurrentToken();
+            }
+
+            // Look for the final period.
+            if (token is not null && token.Type != PascalTokenType.Dot)
+                ErrorHandler.Flag(token, PascalErrorCode.MissingPeriod, parser: this);
+
+            token = CurrentToken();
+
+            // Set the parse tree root node.
+            if (rootNode is not null)
+                Code.Root = rootNode;
+
+            // Send the parser summary message.
+            float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
+
+            if (token is not null)
+            {
+                SendMessage(new Message(
+                    MessageType.ParserSummary,
+                    body: new[]
+                    {
+                        token.LineNumber,
+                        ErrorCount,
+                        elapsedTime
+                    })
+                );
+            }
+        }
+
+        catch (Exception)
+        {
+            PascalErrorHandler.AbortTranslation(PascalErrorCode.IoError, parser: this);
         }
     }
 
