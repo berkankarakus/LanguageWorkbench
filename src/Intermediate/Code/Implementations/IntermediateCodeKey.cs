@@ -23,6 +23,11 @@ public sealed record IntermediateCodeKey(string Name) : IIntermediateCodeKey
     /// </summary>
     public static IntermediateCodeKey Value { get; } = new(nameof(Value));
 
+    /// <summary>
+    /// Identifies the original source text of a literal value.
+    /// </summary>
+    public static IntermediateCodeKey SourceText { get; } = new(nameof(SourceText));
+
     /// <inheritdoc />
     public override string ToString()
     {

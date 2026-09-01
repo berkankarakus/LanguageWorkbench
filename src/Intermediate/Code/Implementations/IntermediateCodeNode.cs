@@ -18,16 +18,16 @@ public class IntermediateCodeNode(IIntermediateCodeNodeType nodeType) : IInterme
     /// <inheritdoc />
     public List<IIntermediateCodeNode> Children { get; } = [];
 
-    private readonly Dictionary<IIntermediateCodeKey, object> _attributes = new();
+    public Dictionary<IIntermediateCodeKey, object> Attributes { get; } = new();
 
     /// <inheritdoc />
     public IIntermediateCodeNode? AddChild(IIntermediateCodeNode? child)
     {
-        if (child is not null)
-        {
-            Children.Add(child);
-            child.Parent = this;
-        }
+        if (child is null)
+            return child;
+
+        Children.Add(child);
+        child.Parent = this;
 
         return child;
     }
@@ -35,13 +35,13 @@ public class IntermediateCodeNode(IIntermediateCodeNodeType nodeType) : IInterme
     /// <inheritdoc />
     public object? this[IIntermediateCodeKey key]
     {
-        get => _attributes.GetValueOrDefault(key);
+        get => Attributes.GetValueOrDefault(key);
         set
         {
             if (value is null)
-                _attributes.Remove(key);
+                Attributes.Remove(key);
             else
-                _attributes[key] = value;
+                Attributes[key] = value;
         }
     }
 
@@ -50,7 +50,7 @@ public class IntermediateCodeNode(IIntermediateCodeNodeType nodeType) : IInterme
     {
         IIntermediateCodeNode copy = IntermediateCodeFactory.CreateIntermediateCodeNode(NodeType);
 
-        foreach (var (key, value) in _attributes)
+        foreach (var (key, value) in Attributes)
             copy[key] = value;
 
         return copy;

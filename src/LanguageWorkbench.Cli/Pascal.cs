@@ -4,6 +4,7 @@ using FrontEnd.Parsing;
 using FrontEnd.Pascal.Factory;
 using FrontEnd.Pascal.Parsing;
 using Intermediate.Code.Interfaces;
+using Intermediate.Code.Utilities;
 using Intermediate.Symbols.Interfaces;
 using Intermediate.Symbols.Utilities;
 using LanguageWorkbench.Cli.Listeners;
@@ -16,6 +17,7 @@ public class Pascal
     private readonly string _operation;
     private readonly string _filePath;
     private readonly bool _crossReference;
+    private readonly bool _intermediate;
 
     /// <summary>
     /// Configures a Pascal translation request.
@@ -35,6 +37,7 @@ public class Pascal
         _operation = operation;
         _filePath = filePath;
         _crossReference = flags.Contains('x');
+        _intermediate = flags.Contains('i');
     }
 
     /// <summary>
@@ -64,11 +67,21 @@ public class Pascal
             backEnd.AddMessageListener(new BackendMessageListener());
 
             parser.Parse();
+
+            if (parser.ErrorCount > 0)
+                return;
+
             IIntermediateCode iCode = parser.Code;
             ISymbolTableStack symbolTableStack = Parser.SymbolTableStack;
 
             if (_crossReference)
                 CrossReferencer.Print(symbolTableStack);
+
+            if (_intermediate)
+            {
+                ParseTreePrinter parseTreePrinter = new(Console.Out);
+                parseTreePrinter.Print(iCode);
+            }
 
             backEnd.Process(iCode, symbolTableStack);
         }
