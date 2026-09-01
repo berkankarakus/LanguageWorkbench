@@ -16,6 +16,9 @@ namespace FrontEnd.Pascal.Parsing;
 /// <param name="scanner">The scanner that supplies Pascal tokens.</param>
 public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
 {
+    /// <summary>
+    /// Handles syntax errors reported while parsing Pascal source.
+    /// </summary>
     protected static readonly PascalErrorHandler ErrorHandler = new();
 
     /// <summary>
@@ -62,9 +65,9 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
                     }
 
                     float tokenElapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
-                    SendMessage(new(
+                    SendMessage(new Message(
                         MessageType.ParserSummary,
-                        new object?[]
+                        body: new object?[]
                         {
                             token.LineNumber,
                             ErrorCount,

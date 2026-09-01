@@ -11,6 +11,9 @@ public class SymbolTableStack : ISymbolTableStack
     private int _currentNestingLevel;
     private readonly List<ISymbolTable> _symbolTable;
 
+    /// <summary>
+    /// Initializes a symbol-table stack with its outermost scope.
+    /// </summary>
     public SymbolTableStack()
     {
         _currentNestingLevel = 0;

@@ -16,7 +16,15 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
     private static readonly MessageHandler MessageHandler = new();
     private readonly TextReader _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     private string? _line;
+
+    /// <summary>
+    /// Gets the one-based number of the current source line.
+    /// </summary>
     public int LineNumber { get; private set; }
+
+    /// <summary>
+    /// Gets the zero-based position of the current character in the source line.
+    /// </summary>
     public int CurrentPosition { get; private set; } = -2;
 
     /// <summary>
@@ -131,5 +139,6 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
         MessageHandler.SendMessage(message);
     }
 
+    /// <inheritdoc />
     public void Dispose() => Close();
 }

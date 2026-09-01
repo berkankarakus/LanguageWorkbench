@@ -19,9 +19,9 @@ public class ParseTreePrinter(TextWriter textWriter)
     private readonly StringBuilder _line = new();
 
     /// <summary>
-    /// Print the intermediate code as a parse tree.
+    /// Writes intermediate code as a parse tree.
     /// </summary>
-    /// <param name="intermediateCode"></param>
+    /// <param name="intermediateCode">The intermediate code to write.</param>
     public void Print(IIntermediateCode intermediateCode)
     {
         textWriter.WriteLine("\n===== INTERMEDIATE CODE =====");
@@ -31,9 +31,9 @@ public class ParseTreePrinter(TextWriter textWriter)
     }
 
     /// <summary>
-    /// Print a parse tree node.
+    /// Writes a parse-tree node.
     /// </summary>
-    /// <param name="intermediateCode"></param>
+    /// <param name="intermediateCode">The node to write.</param>
     private void PrintNode(IntermediateCodeNode? intermediateCode)
     {
         // opening tag
@@ -66,9 +66,9 @@ public class ParseTreePrinter(TextWriter textWriter)
     }
 
     /// <summary>
-    /// Print a parse tree node's child nodes.
+    /// Writes child nodes at the next indentation level.
     /// </summary>
-    /// <param name="childNodes"></param>
+    /// <param name="childNodes">The child nodes to write.</param>
     private void PrintChildNodes(List<IIntermediateCodeNode> childNodes)
     {
         string saveIndentation = _indentation;
@@ -81,20 +81,18 @@ public class ParseTreePrinter(TextWriter textWriter)
     }
 
     /// <summary>
-    /// Print a parse tree node's type specification.
+    /// Writes type-specific information for a parse-tree node.
     /// </summary>
-    /// <param name="intermediateCode"></param>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <param name="intermediateCode">The node whose type information is written.</param>
     private static void PrintTypeSpec(IntermediateCodeNode? intermediateCode)
     {
         // Do nothing for now.
     }
 
     /// <summary>
-    /// Print a tree node's attributes.
+    /// Writes the attributes of a parse-tree node.
     /// </summary>
-    /// <param name="intermediateCode"></param>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <param name="intermediateCode">The node whose attributes are written.</param>
     private void PrintAttributes(IntermediateCodeNode? intermediateCode)
     {
         string saveIndentation = _indentation;
@@ -126,10 +124,10 @@ public class ParseTreePrinter(TextWriter textWriter)
     }
 
     /// <summary>
-    /// Print a node attribute as key="value".
+    /// Writes a node attribute as <c>key="value"</c>.
     /// </summary>
-    /// <param name="keyString"></param>
-    /// <param name="attributeValue"></param>
+    /// <param name="keyString">The attribute name.</param>
+    /// <param name="attributeValue">The attribute value.</param>
     private void PrintAttribute(string? keyString, object attributeValue)
     {
         // If the value is a symbol table entry, use the identifier's name. Else just use the value string.
@@ -151,10 +149,9 @@ public class ParseTreePrinter(TextWriter textWriter)
     }
 
     /// <summary>
-    /// Append text to the output line.
+    /// Appends text to the current output line.
     /// </summary>
-    /// <param name="text"></param>
-    /// <exception cref="NotImplementedException"></exception>
+    /// <param name="text">The text to append.</param>
     private void Append(string text)
     {
         int textLength = text.Length;

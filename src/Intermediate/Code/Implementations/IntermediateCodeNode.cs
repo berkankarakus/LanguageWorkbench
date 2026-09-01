@@ -18,6 +18,9 @@ public class IntermediateCodeNode(IIntermediateCodeNodeType nodeType) : IInterme
     /// <inheritdoc />
     public List<IIntermediateCodeNode> Children { get; } = [];
 
+    /// <summary>
+    /// Gets the attributes associated with this node.
+    /// </summary>
     public Dictionary<IIntermediateCodeKey, object> Attributes { get; } = new();
 
     /// <inheritdoc />

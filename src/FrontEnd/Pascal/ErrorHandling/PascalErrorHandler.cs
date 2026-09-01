@@ -9,6 +9,9 @@ namespace FrontEnd.Pascal.ErrorHandling;
 /// </summary>
 public class PascalErrorHandler
 {
+    /// <summary>
+    /// Gets the number of syntax errors reported by this handler.
+    /// </summary>
     public int ErrorCount { get; private set; }
 
     /// <summary>
