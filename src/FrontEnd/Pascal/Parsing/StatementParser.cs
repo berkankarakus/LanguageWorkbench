@@ -3,7 +3,6 @@ using FrontEnd.Pascal.Tokens;
 using FrontEnd.Tokens;
 using Intermediate.Code.Implementations;
 using Intermediate.Code.Interfaces;
-using Intermediate.Factory;
 
 namespace FrontEnd.Pascal.Parsing;
 
@@ -35,11 +34,15 @@ public class StatementParser(PascalParserTopDown parent) : PascalParserTopDown(p
         }
 
         else
-            statementNode = IntermediateCodeFactory.CreateIntermediateCodeNode(IntermediateCodeNodeType.NoOp);
+        {
+            // Do not return a no-op node without consuming the token. ParseList would then retry
+            // the same token indefinitely.
+            ErrorHandler.Flag(token, PascalErrorCode.UnexpectedToken, parser: this);
+            return null;
+        }
 
         // Set the current line number as an attribute.
-        if (statementNode is not null)
-            SetLineNumber(statementNode, token);
+        SetLineNumber(statementNode, token);
 
         return statementNode;
     }

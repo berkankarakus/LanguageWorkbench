@@ -18,7 +18,7 @@ public sealed class CompoundStatementParser(PascalParserTopDown parent) : Statem
     /// </summary>
     /// <param name="token">The <c>BEGIN</c> token that starts the statement.</param>
     /// <returns>The intermediate-code node for the compound statement.</returns>
-    public override IIntermediateCodeNode? Parse(Token token)
+    public override IIntermediateCodeNode Parse(Token token)
     {
         token = NextToken();
         var compoundNode = IntermediateCodeFactory.CreateIntermediateCodeNode(IntermediateCodeNodeType.Compound);

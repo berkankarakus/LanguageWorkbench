@@ -19,7 +19,7 @@ public sealed class AssignmentStatementParser(PascalParserTopDown parent) : Stat
     /// </summary>
     /// <param name="token">The identifier that begins the assignment.</param>
     /// <returns>The intermediate-code node for the assignment.</returns>
-    public override IIntermediateCodeNode? Parse(Token token)
+    public override IIntermediateCodeNode Parse(Token token)
     {
         ArgumentNullException.ThrowIfNull(token.Text);
         var assignCodeNode = IntermediateCodeFactory.CreateIntermediateCodeNode(IntermediateCodeNodeType.Assignment);
@@ -45,7 +45,7 @@ public sealed class AssignmentStatementParser(PascalParserTopDown parent) : Stat
             ErrorHandler.Flag(token, PascalErrorCode.MissingColonEquals, parser: this);
 
         // Parse the expression. The ASSIGN node adopts the expression's node at its second child.
-        ExpressionParser expressionParser = new(this);
+        ExpressionParser expressionParser = new(parent: this);
         assignCodeNode.AddChild(expressionParser.Parse(token));
 
         return assignCodeNode;

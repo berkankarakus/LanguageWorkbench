@@ -9,7 +9,6 @@ namespace FrontEnd.Pascal.ErrorHandling;
 /// </summary>
 public class PascalErrorHandler
 {
-    private const int MaxErrors = 25;
     public int ErrorCount { get; private set; }
 
     /// <summary>
@@ -31,8 +30,8 @@ public class PascalErrorHandler
             })
         );
 
-        if (++ErrorCount > MaxErrors)
-            AbortTranslation(PascalErrorCode.TooManyErrors, parser);
+        ++ErrorCount;
+        throw new PascalSyntaxException();
     }
 
     /// <summary>
@@ -57,3 +56,8 @@ public class PascalErrorHandler
         Environment.Exit(errorCode.Status);
     }
 }
+
+/// <summary>
+/// Signals that parsing must stop after a reported Pascal syntax error.
+/// </summary>
+internal sealed class PascalSyntaxException : Exception;

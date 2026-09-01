@@ -172,6 +172,11 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
             }
         }
 
+        catch (PascalSyntaxException)
+        {
+            // The syntax error was already reported by PascalErrorHandler.
+        }
+
         catch (Exception)
         {
             PascalErrorHandler.AbortTranslation(PascalErrorCode.IoError, parser: this);
