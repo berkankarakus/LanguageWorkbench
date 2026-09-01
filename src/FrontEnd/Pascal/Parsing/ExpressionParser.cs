@@ -189,7 +189,7 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
             // Create a new operator node & adopt the current tree as its first child.
             IIntermediateCodeNodeType codeNodeType = MultiplicativeOperatorNodeTypes[tokenType];
             IIntermediateCodeNode opNode = IntermediateCodeFactory.CreateIntermediateCodeNode(codeNodeType);
-            opNode.AddChild(codeNode);
+            opNode.AddChild(rootNode);
 
             // Consume the operator.
             token = NextToken();
@@ -200,8 +200,8 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
             // The operator node becomes the new root node.
             rootNode = opNode;
 
-            token = NextToken();
-            tokenType = token.Type;
+            token = CurrentToken();
+            tokenType = token?.Type;
         }
 
         return rootNode;
@@ -252,6 +252,7 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
         else if (tokenType == PascalTokenType.Real)
         {
             rootNode = IntermediateCodeFactory.CreateIntermediateCodeNode(IntermediateCodeNodeType.RealConstant);
+            rootNode[IntermediateCodeKey.SourceText] = token.Text;
             rootNode[IntermediateCodeKey.Value] = token.Value;
 
             // Consume the number.

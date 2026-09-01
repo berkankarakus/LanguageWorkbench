@@ -24,9 +24,9 @@ public class PascalWordToken(SourceReader source) : PascalToken(source)
 
         Text = textBuffer.ToString();
 
-        // is it a reserved word or an identifier?
-        Type = PascalTokenType.ReservedWords.Contains(Text)
-            ? PascalTokenType.ReservedWord
+        // A reserved word retains its specific token type; all other words are identifiers.
+        Type = PascalTokenType.ReservedWords.TryGetValue(Text, out PascalTokenType? reservedWord)
+            ? reservedWord
             : PascalTokenType.Identifier;
     }
 }
