@@ -5,7 +5,7 @@ using Intermediate.Code.Implementations;
 using Intermediate.Code.Interfaces;
 using Intermediate.Factory;
 
-namespace FrontEnd.Pascal.Parsing;
+namespace FrontEnd.Pascal.Parsing.TopDown;
 
 /// <summary>
 /// Parses Pascal compound statements.

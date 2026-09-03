@@ -6,7 +6,7 @@ using Intermediate.Code.Interfaces;
 using Intermediate.Factory;
 using Intermediate.Symbols.Interfaces;
 
-namespace FrontEnd.Pascal.Parsing;
+namespace FrontEnd.Pascal.Parsing.TopDown;
 
 /// <summary>
 /// Parses Pascal expressions into intermediate-code nodes.

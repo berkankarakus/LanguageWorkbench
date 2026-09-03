@@ -4,7 +4,7 @@ using FrontEnd.Tokens;
 using Intermediate.Code.Implementations;
 using Intermediate.Code.Interfaces;
 
-namespace FrontEnd.Pascal.Parsing;
+namespace FrontEnd.Pascal.Parsing.TopDown;
 
 /// <summary>
 /// Parses Pascal statements and dispatches to statement-specific parsers.
