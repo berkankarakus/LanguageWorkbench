@@ -11,7 +11,7 @@ namespace Backend.CodeGeneration;
 public class CodeGenerator : BackendProcessor
 {
     /// <inheritdoc />
-    public override void Process(IIntermediateCode iCode, ISymbolTableStack symbolTableStack)
+    public override void Process(IIntermediateCode intermediateCode, ISymbolTableStack symbolTableStack)
     {
         long startTime = Stopwatch.GetTimestamp();
         float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
