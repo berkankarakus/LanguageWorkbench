@@ -44,7 +44,7 @@ For each source line, the CLI prints recognized tokens and their position. Scann
 ## Architecture
 
 ```text
-SourceReader -> PascalScanner -> PascalParserTopDown -> BackendProcessor
+SourceReader -> PascalScanner -> PascalParser -> BackendProcessor
                    |                    |
                    +-> Token messages   +-> Parser summary / diagnostics
 ```

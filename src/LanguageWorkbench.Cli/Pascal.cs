@@ -2,7 +2,7 @@ using Backend;
 using FrontEnd.Input;
 using FrontEnd.Parsing;
 using FrontEnd.Pascal.Factory;
-using FrontEnd.Pascal.Parsing;
+using FrontEnd.Pascal.Parsing.BottomUp;
 using Intermediate.Code.Interfaces;
 using Intermediate.Code.Utilities;
 using Intermediate.Symbols.Interfaces;
@@ -55,11 +55,11 @@ public class Pascal
     {
         try
         {
-            using var source = new SourceReader(File.OpenText(_filePath));
+            using SourceReader source = new(File.OpenText(_filePath));
             ParserMessageListener parserMessageListener = new(ShouldShowTokens());
             source.AddMessageListener(new SourceMessageListener(parserMessageListener.FlushTokens));
 
-            PascalFrontEndFactory<PascalParserTopDown> factory = new(scanner => new PascalParserTopDown(scanner));
+            PascalFrontEndFactory<PascalParser> factory = new(scanner => new PascalParser(scanner));
             Parser parser = factory.CreateParser(source);
             parser.AddMessageListener(parserMessageListener);
 
@@ -85,7 +85,6 @@ public class Pascal
 
             backEnd.Process(iCode, symbolTableStack);
         }
-
         catch (Exception e)
         {
             Console.WriteLine("***** Internal translator error. *****");
