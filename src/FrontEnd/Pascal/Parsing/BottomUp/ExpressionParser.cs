@@ -12,7 +12,7 @@ namespace FrontEnd.Pascal.Parsing.BottomUp;
 /// Reduces Pascal expressions with operand and operator stacks.
 /// </summary>
 /// <param name="parent">The parser that provides the scanner and parser state.</param>
-public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
+public sealed class ExpressionParser(PascalParserBottomUp parent) : PascalParserBottomUp(parent)
 {
     /// <summary>
     /// Parses an expression and leaves its terminating token as the current token.
@@ -44,7 +44,6 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
                 token = NextToken();
                 expectingOperand = false;
             }
-
             else if (tokenType == PascalTokenType.LeftParen)
             {
                 if (!expectingOperand)
@@ -53,7 +52,6 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
                 operators.Push((tokenType, IsUnary: false));
                 token = NextToken();
             }
-
             else if (tokenType == PascalTokenType.RightParen)
             {
                 if (expectingOperand)
@@ -63,7 +61,6 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
                 token = NextToken();
                 expectingOperand = false;
             }
-
             else if (IsOperator(tokenType))
             {
                 if (expectingOperand)
@@ -87,7 +84,6 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
                 token = NextToken();
                 expectingOperand = true;
             }
-
             else
                 ErrorHandler.Flag(token, PascalErrorCode.InvalidExpression, parser: this);
         }
@@ -111,40 +107,32 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
 
     private static bool CanContinueExpression(Token token)
     {
-        return
-            token is not EofToken &&
-            !IsExpressionTerminator(token.Type);
+        return token is not EofToken && !IsExpressionTerminator(token.Type);
     }
 
     private static bool IsExpressionTerminator(ITokenType? tokenType)
     {
-        return
-            tokenType == PascalTokenType.SemiColon ||
-            tokenType == PascalTokenType.End ||
-            tokenType == PascalTokenType.Dot;
+        return tokenType == PascalTokenType.SemiColon
+            || tokenType == PascalTokenType.End
+            || tokenType == PascalTokenType.Dot;
     }
 
     private static bool IsOperand(ITokenType tokenType)
     {
-        return
-            tokenType == PascalTokenType.Identifier ||
-            tokenType == PascalTokenType.Integer ||
-            tokenType == PascalTokenType.Real ||
-            tokenType == PascalTokenType.String;
+        return tokenType == PascalTokenType.Identifier
+            || tokenType == PascalTokenType.Integer
+            || tokenType == PascalTokenType.Real
+            || tokenType == PascalTokenType.String;
     }
 
     private static bool IsOperator(ITokenType tokenType)
     {
-        return
-            GetPrecedence(tokenType) >= 0 ||
-            tokenType == PascalTokenType.Not;
+        return GetPrecedence(tokenType) >= 0 || tokenType == PascalTokenType.Not;
     }
 
     private static bool IsInvalidUnaryOperator(ITokenType tokenType)
     {
-        return
-            tokenType != PascalTokenType.Minus &&
-            tokenType != PascalTokenType.Not;
+        return tokenType != PascalTokenType.Minus && tokenType != PascalTokenType.Not;
     }
 
     private static int GetPrecedence(ITokenType tokenType)
@@ -155,38 +143,33 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
         if (IsAdditiveOperator(tokenType))
             return 2;
 
-        return IsMultiplicativeOperator(tokenType)
-            ? 3
-            : -1;
+        return IsMultiplicativeOperator(tokenType) ? 3 : -1;
     }
 
     private static bool IsRelationalOperator(ITokenType tokenType)
     {
-        return
-            tokenType == PascalTokenType.Equals ||
-            tokenType == PascalTokenType.NotEquals ||
-            tokenType == PascalTokenType.LessThan ||
-            tokenType == PascalTokenType.LessEquals ||
-            tokenType == PascalTokenType.GreaterThan ||
-            tokenType == PascalTokenType.GreaterEquals;
+        return tokenType == PascalTokenType.Equals
+            || tokenType == PascalTokenType.NotEquals
+            || tokenType == PascalTokenType.LessThan
+            || tokenType == PascalTokenType.LessEquals
+            || tokenType == PascalTokenType.GreaterThan
+            || tokenType == PascalTokenType.GreaterEquals;
     }
 
     private static bool IsAdditiveOperator(ITokenType tokenType)
     {
-        return
-            tokenType == PascalTokenType.Plus ||
-            tokenType == PascalTokenType.Minus ||
-            tokenType == PascalTokenType.Or;
+        return tokenType == PascalTokenType.Plus
+            || tokenType == PascalTokenType.Minus
+            || tokenType == PascalTokenType.Or;
     }
 
     private static bool IsMultiplicativeOperator(ITokenType tokenType)
     {
-        return
-            tokenType == PascalTokenType.Star ||
-            tokenType == PascalTokenType.Slash ||
-            tokenType == PascalTokenType.Div ||
-            tokenType == PascalTokenType.Mod ||
-            tokenType == PascalTokenType.And;
+        return tokenType == PascalTokenType.Star
+            || tokenType == PascalTokenType.Slash
+            || tokenType == PascalTokenType.Div
+            || tokenType == PascalTokenType.Mod
+            || tokenType == PascalTokenType.And;
     }
 
     private void ReduceHigherPrecedenceOperators(
@@ -204,12 +187,11 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
         ITokenType tokenType
     )
     {
-        return
-            operators.Count > 0 &&
-            operators.Peek().Type != PascalTokenType.LeftParen &&
-            (
-                operators.Peek().IsUnary ||
-                GetPrecedence(operators.Peek().Type) >= GetPrecedence(tokenType)
+        return operators.Count > 0
+            && operators.Peek().Type != PascalTokenType.LeftParen
+            && (
+                operators.Peek().IsUnary
+                || GetPrecedence(operators.Peek().Type) >= GetPrecedence(tokenType)
             );
     }
 
@@ -230,9 +212,7 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
 
     private static bool HasUnreducedOperator(Stack<(ITokenType Type, bool IsUnary)> operators)
     {
-        return
-            operators.Count > 0 &&
-            operators.Peek().Type != PascalTokenType.LeftParen;
+        return operators.Count > 0 && operators.Peek().Type != PascalTokenType.LeftParen;
     }
 
     private void ReduceOperator(
@@ -263,7 +243,9 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
         IIntermediateCodeNode rightOperand = operands.Pop();
         IIntermediateCodeNode leftOperand = operands.Pop();
         var operatorNodeType = GetOperatorNodeType(operation.Type);
-        var binaryOperatorNode = IntermediateCodeFactory.CreateIntermediateCodeNode(operatorNodeType);
+        var binaryOperatorNode = IntermediateCodeFactory.CreateIntermediateCodeNode(
+            operatorNodeType
+        );
         binaryOperatorNode.AddChild(leftOperand);
         binaryOperatorNode.AddChild(rightOperand);
         operands.Push(binaryOperatorNode);
@@ -276,9 +258,11 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
             _ when tokenType == PascalTokenType.Equals => IntermediateCodeNodeType.Equal,
             _ when tokenType == PascalTokenType.NotEquals => IntermediateCodeNodeType.NotEqual,
             _ when tokenType == PascalTokenType.LessThan => IntermediateCodeNodeType.LessThan,
-            _ when tokenType == PascalTokenType.LessEquals => IntermediateCodeNodeType.LessThanOrEqual,
+            _ when tokenType == PascalTokenType.LessEquals =>
+                IntermediateCodeNodeType.LessThanOrEqual,
             _ when tokenType == PascalTokenType.GreaterThan => IntermediateCodeNodeType.GreaterThan,
-            _ when tokenType == PascalTokenType.GreaterEquals => IntermediateCodeNodeType.GreaterThanOrEqual,
+            _ when tokenType == PascalTokenType.GreaterEquals =>
+                IntermediateCodeNodeType.GreaterThanOrEqual,
             _ when tokenType == PascalTokenType.Plus => IntermediateCodeNodeType.Add,
             _ when tokenType == PascalTokenType.Minus => IntermediateCodeNodeType.Subtract,
             _ when tokenType == PascalTokenType.Or => IntermediateCodeNodeType.Or,
@@ -287,7 +271,7 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
             _ when tokenType == PascalTokenType.Div => IntermediateCodeNodeType.IntegerDivide,
             _ when tokenType == PascalTokenType.Mod => IntermediateCodeNodeType.Mod,
             _ when tokenType == PascalTokenType.And => IntermediateCodeNodeType.And,
-            _ => throw new ArgumentOutOfRangeException(nameof(tokenType))
+            _ => throw new ArgumentOutOfRangeException(nameof(tokenType)),
         };
     }
 
@@ -308,7 +292,9 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
             }
 
             entry.AppendLineNumber(token.LineNumber);
-            var variableNode = IntermediateCodeFactory.CreateIntermediateCodeNode(IntermediateCodeNodeType.Variable);
+            var variableNode = IntermediateCodeFactory.CreateIntermediateCodeNode(
+                IntermediateCodeNodeType.Variable
+            );
             variableNode[IntermediateCodeKey.Id] = entry;
             return variableNode;
         }
@@ -318,7 +304,10 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
 
         if (token.Type == PascalTokenType.Real)
         {
-            IIntermediateCodeNode realNode = CreateConstantNode(IntermediateCodeNodeType.RealConstant, token.Value);
+            IIntermediateCodeNode realNode = CreateConstantNode(
+                IntermediateCodeNodeType.RealConstant,
+                token.Value
+            );
             realNode[IntermediateCodeKey.SourceText] = token.Text;
             return realNode;
         }
@@ -326,7 +315,10 @@ public sealed class ExpressionParser(PascalParser parent) : PascalParser(parent)
         return CreateConstantNode(IntermediateCodeNodeType.StringConstant, token.Value);
     }
 
-    private static IIntermediateCodeNode CreateConstantNode(IIntermediateCodeNodeType nodeType, object? value)
+    private static IIntermediateCodeNode CreateConstantNode(
+        IIntermediateCodeNodeType nodeType,
+        object? value
+    )
     {
         IIntermediateCodeNode node = IntermediateCodeFactory.CreateIntermediateCodeNode(nodeType);
         node[IntermediateCodeKey.Value] = value;

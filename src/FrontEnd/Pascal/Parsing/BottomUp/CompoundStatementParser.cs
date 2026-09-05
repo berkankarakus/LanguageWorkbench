@@ -11,7 +11,7 @@ namespace FrontEnd.Pascal.Parsing.BottomUp;
 /// Reduces nested <c>BEGIN</c> and <c>END</c> token pairs into compound-statement nodes.
 /// </summary>
 /// <param name="parent">The parser that provides the scanner and parser state.</param>
-public sealed class CompoundStatementParser(PascalParser parent) : StatementParser(parent)
+public sealed class CompoundStatementParser(PascalParserBottomUp parent) : StatementParser(parent)
 {
     /// <summary>
     /// Parses a compound statement and leaves its trailing period as the current token.
@@ -30,7 +30,6 @@ public sealed class CompoundStatementParser(PascalParser parent) : StatementPars
                 compoundNodes.Push(CreateCompoundNode(token));
                 token = NextToken();
             }
-
             else if (token.Type == PascalTokenType.End)
             {
                 if (compoundNodes.Count == 0)
@@ -48,7 +47,6 @@ public sealed class CompoundStatementParser(PascalParser parent) : StatementPars
                 compoundNodes.Peek().AddChild(compoundNode);
                 ConsumeStatementTerminator(ref token);
             }
-
             else
             {
                 if (compoundNodes.Count == 0)
@@ -69,7 +67,9 @@ public sealed class CompoundStatementParser(PascalParser parent) : StatementPars
 
     private static IIntermediateCodeNode CreateCompoundNode(Token token)
     {
-        var compoundNode = IntermediateCodeFactory.CreateIntermediateCodeNode(IntermediateCodeNodeType.Compound);
+        var compoundNode = IntermediateCodeFactory.CreateIntermediateCodeNode(
+            IntermediateCodeNodeType.Compound
+        );
         compoundNode[IntermediateCodeKey.Line] = token.LineNumber;
         return compoundNode;
     }

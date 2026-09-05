@@ -12,18 +12,23 @@ namespace FrontEnd.Pascal.Parsing.BottomUp;
 /// Reduces a Pascal assignment statement into an intermediate-code node.
 /// </summary>
 /// <param name="parent">The parser that provides the scanner and parser state.</param>
-public sealed class AssignmentStatementParser(PascalParser parent) : StatementParser(parent)
+public sealed class AssignmentStatementParser(PascalParserBottomUp parent) : StatementParser(parent)
 {
     /// <inheritdoc />
     public override IIntermediateCodeNode Parse(ref Token token)
     {
         ArgumentNullException.ThrowIfNull(token.Text);
-        var assignmentNode = IntermediateCodeFactory.CreateIntermediateCodeNode(IntermediateCodeNodeType.Assignment);
+        var assignmentNode = IntermediateCodeFactory.CreateIntermediateCodeNode(
+            IntermediateCodeNodeType.Assignment
+        );
         string name = token.Text.ToLowerInvariant();
-        ISymbolTableEntry entry = SymbolTableStack.Lookup(name) ?? SymbolTableStack.EnterLocal(name);
+        ISymbolTableEntry entry =
+            SymbolTableStack.Lookup(name) ?? SymbolTableStack.EnterLocal(name);
         entry.AppendLineNumber(token.LineNumber);
 
-        var variableNode = IntermediateCodeFactory.CreateIntermediateCodeNode(IntermediateCodeNodeType.Variable);
+        var variableNode = IntermediateCodeFactory.CreateIntermediateCodeNode(
+            IntermediateCodeNodeType.Variable
+        );
         variableNode[IntermediateCodeKey.Id] = entry;
         assignmentNode.AddChild(variableNode);
         assignmentNode[IntermediateCodeKey.Line] = token.LineNumber;

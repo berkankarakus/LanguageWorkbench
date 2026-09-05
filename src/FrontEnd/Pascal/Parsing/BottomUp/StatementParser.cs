@@ -9,7 +9,7 @@ namespace FrontEnd.Pascal.Parsing.BottomUp;
 /// Dispatches Pascal statements while a bottom-up parser reduces a compound statement.
 /// </summary>
 /// <param name="parent">The parser that provides the scanner and parser state.</param>
-public class StatementParser(PascalParser parent) : PascalParser(parent)
+public class StatementParser(PascalParserBottomUp parent) : PascalParserBottomUp(parent)
 {
     /// <summary>
     /// Parses a statement that starts at the current token.
