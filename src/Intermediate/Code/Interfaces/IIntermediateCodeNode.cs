@@ -9,7 +9,7 @@ public interface IIntermediateCodeNode
     /// Gets the type that identifies this node's syntactic role.
     /// </summary>
     /// <returns>The node type.</returns>
-    IIntermediateCodeNodeType NodeType { get; }
+    IIntermediateCodeNodeType Type { get; }
 
     /// <summary>
     /// Gets the parent of this node.

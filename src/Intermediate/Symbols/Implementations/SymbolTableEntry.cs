@@ -8,7 +8,7 @@ namespace Intermediate.Symbols.Implementations;
 public sealed class SymbolTableEntry(string name, ISymbolTable symbolTable) : ISymbolTableEntry
 {
     private readonly List<int> _lineNumbers = [];
-    private readonly Dictionary<ISymbolTableKey, object> _entries = new();
+    private readonly Dictionary<ISymbolTableKey, object?> _entries = new();
 
     /// <inheritdoc />
     public string Name { get; } = name;
@@ -32,7 +32,7 @@ public sealed class SymbolTableEntry(string name, ISymbolTable symbolTable) : IS
     }
 
     /// <inheritdoc />
-    public object this[ISymbolTableKey key]
+    public object? this[ISymbolTableKey key]
     {
         get => _entries[key];
         set => _entries[key] = value;

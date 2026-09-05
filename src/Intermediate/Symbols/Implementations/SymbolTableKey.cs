@@ -23,6 +23,11 @@ public sealed class SymbolTableKey : ISymbolTableKey
     public static SymbolTableKey ConstantValue { get; } = new(nameof(ConstantValue));
 
     /// <summary>
+    /// Gets the key for a variable's current runtime value.
+    /// </summary>
+    public static SymbolTableKey DataValue { get; } = new(nameof(DataValue));
+
+    /// <summary>
     /// Gets the key for a routine's executable code.
     /// </summary>
     public static SymbolTableKey RoutineCode { get; } = new(nameof(RoutineCode));

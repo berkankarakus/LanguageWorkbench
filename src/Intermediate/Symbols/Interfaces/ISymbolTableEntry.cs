@@ -28,6 +28,6 @@ public interface ISymbolTableEntry
 
     /// <summary>Gets or sets an attribute associated with the symbol.</summary>
     /// <param name="key">The attribute key.</param>
-    /// <returns>The stored attribute value.</returns>
-    object this[ISymbolTableKey key] { get; set; }
+    /// <returns>The stored attribute value, if any.</returns>
+    object? this[ISymbolTableKey key] { get; set; }
 }

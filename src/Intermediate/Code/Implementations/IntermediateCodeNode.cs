@@ -10,7 +10,7 @@ namespace Intermediate.Code.Implementations;
 public class IntermediateCodeNode(IIntermediateCodeNodeType nodeType) : IIntermediateCodeNode
 {
     /// <inheritdoc />
-    public IIntermediateCodeNodeType NodeType { get; } = nodeType;
+    public IIntermediateCodeNodeType Type { get; } = nodeType;
 
     /// <inheritdoc />
     public IIntermediateCodeNode? Parent { get; set; }
@@ -51,7 +51,7 @@ public class IntermediateCodeNode(IIntermediateCodeNodeType nodeType) : IInterme
     /// <inheritdoc />
     public IIntermediateCodeNode Copy()
     {
-        IIntermediateCodeNode copy = IntermediateCodeFactory.CreateIntermediateCodeNode(NodeType);
+        IIntermediateCodeNode copy = IntermediateCodeFactory.CreateIntermediateCodeNode(Type);
 
         foreach (var (key, value) in Attributes)
             copy[key] = value;
@@ -62,6 +62,6 @@ public class IntermediateCodeNode(IIntermediateCodeNodeType nodeType) : IInterme
     /// <inheritdoc />
     public override string? ToString()
     {
-        return NodeType.ToString();
+        return Type.ToString();
     }
 }
