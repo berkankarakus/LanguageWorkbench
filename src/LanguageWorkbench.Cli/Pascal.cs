@@ -2,7 +2,7 @@ using Backend;
 using FrontEnd.Input;
 using FrontEnd.Parsing;
 using FrontEnd.Pascal.Factory;
-using FrontEnd.Pascal.Parsing.BottomUp;
+using FrontEnd.Pascal.Parsing.TopDown;
 using Intermediate.Code.Interfaces;
 using Intermediate.Code.Utilities;
 using Intermediate.Symbols.Interfaces;
@@ -59,7 +59,9 @@ public class Pascal
             ParserMessageListener parserMessageListener = new(ShouldShowTokens());
             source.AddMessageListener(new SourceMessageListener(parserMessageListener.FlushTokens));
 
-            PascalFrontEndFactory<PascalParser> factory = new(scanner => new PascalParser(scanner));
+            PascalFrontEndFactory<PascalParserTopDown> factory = new(
+                scanner => new PascalParserTopDown(scanner)
+            );
             Parser parser = factory.CreateParser(source);
             parser.AddMessageListener(parserMessageListener);
 

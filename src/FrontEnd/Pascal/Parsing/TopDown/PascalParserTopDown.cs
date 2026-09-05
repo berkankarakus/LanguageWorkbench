@@ -1,7 +1,7 @@
 using System.Diagnostics;
+using FrontEnd.Parsing;
 using FrontEnd.Pascal.ErrorHandling;
 using FrontEnd.Pascal.Tokens;
-using FrontEnd.Parsing;
 using FrontEnd.Scanning;
 using FrontEnd.Tokens;
 using Intermediate.Code.Interfaces;
@@ -25,7 +25,8 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
     /// Creates a parser that uses the scanner of an existing parser.
     /// </summary>
     /// <param name="parent">The parser whose scanner will be reused.</param>
-    public PascalParserTopDown(PascalParserTopDown parent) : this(parent.Scanner) { }
+    public PascalParserTopDown(PascalParserTopDown parent)
+        : this(parent.Scanner) { }
 
     /// <summary>
     /// Processes Pascal tokens and publishes their diagnostics and parsing summary.
@@ -54,29 +55,24 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
                         if (!string.IsNullOrEmpty(name))
                         {
                             ISymbolTableEntry entry =
-                                SymbolTableStack.Lookup(name)
-                                ?? SymbolTableStack.EnterLocal(name);
+                                SymbolTableStack.Lookup(name) ?? SymbolTableStack.EnterLocal(name);
 
                             entry.AppendLineNumber(token.LineNumber);
                         }
-
                         else if (tokenType == PascalTokenType.Error && token.Value != null)
                             ErrorHandler.Flag(token, (PascalErrorCode)token.Value, parser: this);
                     }
 
-                    float tokenElapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
+                    float tokenElapsedTime = (float)
+                        Stopwatch.GetElapsedTime(startTime).TotalSeconds;
 
-                    SendMessage(new Message(
-                        MessageType.ParserSummary,
-                        body: new object?[]
-                        {
-                            token.LineNumber,
-                            ErrorCount,
-                            tokenElapsedTime
-                        })
+                    SendMessage(
+                        new Message(
+                            MessageType.ParserSummary,
+                            body: new object?[] { token.LineNumber, ErrorCount, tokenElapsedTime }
+                        )
                     );
                 }
-
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
@@ -90,37 +86,34 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
                     if (token.Value is PascalErrorCode errorCode)
                         ErrorHandler.Flag(token, errorCode, parser: this);
                 }
-
                 else
                 {
-                    SendMessage(new Message(
-                        MessageType.Token,
-                        body: new[]
-                        {
-                            token.LineNumber,
-                            token.Position,
-                            tokenType,
-                            token.Text,
-                            token.Value
-                        }
-                    ));
+                    SendMessage(
+                        new Message(
+                            MessageType.Token,
+                            body: new[]
+                            {
+                                token.LineNumber,
+                                token.Position,
+                                tokenType,
+                                token.Text,
+                                token.Value,
+                            }
+                        )
+                    );
                 }
             } while (token is not EofToken);
 
             // Send the parser summary message.
             float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
 
-            SendMessage(new Message(
-                MessageType.ParserSummary,
-                body: new object?[]
-                {
-                    token.LineNumber,
-                    ErrorCount,
-                    elapsedTime
-                })
+            SendMessage(
+                new Message(
+                    MessageType.ParserSummary,
+                    body: new object?[] { token.LineNumber, ErrorCount, elapsedTime }
+                )
             );
         }
-
         catch (IOException)
         {
             PascalErrorHandler.AbortTranslation(PascalErrorCode.IoError, parser: this);
@@ -142,7 +135,6 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
             // Look for the BEGIN token to parse a compund statement.
             if (token.Type != PascalTokenType.Begin)
                 ErrorHandler.Flag(token, PascalErrorCode.UnexpectedToken, parser: this);
-
             else
             {
                 StatementParser statementParser = new(parent: this);
@@ -165,23 +157,18 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
 
             if (token is not null)
             {
-                SendMessage(new Message(
-                    MessageType.ParserSummary,
-                    body: new[]
-                    {
-                        token.LineNumber,
-                        ErrorCount,
-                        elapsedTime
-                    })
+                SendMessage(
+                    new Message(
+                        MessageType.ParserSummary,
+                        body: new[] { token.LineNumber, ErrorCount, elapsedTime }
+                    )
                 );
             }
         }
-
         catch (PascalSyntaxException)
         {
             // The syntax error was already reported by PascalErrorHandler.
         }
-
         catch (Exception)
         {
             PascalErrorHandler.AbortTranslation(PascalErrorCode.IoError, parser: this);
@@ -192,4 +179,36 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
     /// Gets the number of syntax errors found while parsing.
     /// </summary>
     public override int ErrorCount => ErrorHandler.ErrorCount;
+
+    /// <summary>
+    /// Synchronize the parser.
+    /// </summary>
+    /// <param name="synchSet">The set of token types for synchronizing the parser.</param>
+    /// <returns>The token where the parser has synchronized.</returns>
+    public Token? Synchronize(HashSet<ITokenType> synchSet)
+    {
+        Token? token = CurrentToken();
+
+        // If the current token is not in the synchronization set, then it is expected the parser must recover.
+        if (token?.Type != null && !synchSet.Contains(token.Type))
+        {
+            // Flag the unexpected token.
+            ErrorHandler.Flag(token, PascalErrorCode.UnexpectedToken, this);
+
+            // Recover by skipping the tokens that are not int the synchronization set.
+            do
+            {
+                token = NextToken();
+            } while (NewMethod(synchSet, token));
+        }
+
+        return token;
+    }
+
+    private static bool NewMethod(HashSet<ITokenType> synchSet, Token? token)
+    {
+        return token is not (null or EofToken)
+            && token.Type is not null
+            && !synchSet.Contains(token.Type);
+    }
 }
