@@ -56,7 +56,7 @@ public class AssignmentExecutor(Executor parent) : Executor(parent)
         // Send an ASSIGN message.
         if (node[IntermediateCodeKey.Line] is int lineNumber)
         {
-            base.SendMessage(
+            SendMessage(
                 new Message(MessageType.Assign, new object?[] { lineNumber, name, value })
             );
         }

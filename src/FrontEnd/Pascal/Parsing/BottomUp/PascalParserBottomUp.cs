@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using FrontEnd.Parsing;
 using FrontEnd.Pascal.ErrorHandling;
+using FrontEnd.Pascal.Parsing;
 using FrontEnd.Pascal.Tokens;
 using FrontEnd.Scanning;
 using FrontEnd.Tokens;
@@ -16,20 +17,28 @@ namespace FrontEnd.Pascal.Parsing.BottomUp;
 /// Compound statements are reduced when their <c>END</c> token is encountered. Expression
 /// operands and operators are reduced with precedence-aware stacks.
 /// </remarks>
-/// <param name="scanner">The scanner that supplies Pascal tokens.</param>
-public class PascalParserBottomUp(Scanner scanner) : Parser(scanner)
+public class PascalParserBottomUp : Parser
 {
     /// <summary>
     /// Handles syntax errors reported while parsing Pascal source.
     /// </summary>
-    protected static readonly PascalErrorHandler ErrorHandler = new();
+    protected PascalErrorHandler ErrorHandler => PascalContext.ErrorHandler;
+
+    private PascalTranslationContext PascalContext => (PascalTranslationContext)TranslationContext;
+
+    /// <summary>
+    /// Creates the root experimental bottom-up parser for one Pascal translation.
+    /// </summary>
+    /// <param name="scanner">The scanner that supplies Pascal tokens.</param>
+    public PascalParserBottomUp(Scanner scanner)
+        : base(scanner, new PascalTranslationContext()) { }
 
     /// <summary>
     /// Creates a parser that uses the scanner of an existing bottom-up parser.
     /// </summary>
     /// <param name="parent">The parser whose scanner will be reused.</param>
     protected PascalParserBottomUp(PascalParserBottomUp parent)
-        : this(parent.Scanner) { }
+        : base(parent) { }
 
     /// <inheritdoc />
     public override int ErrorCount => ErrorHandler.ErrorCount;
@@ -52,11 +61,7 @@ public class PascalParserBottomUp(Scanner scanner) : Parser(scanner)
             _ = NextToken();
             SendSummary(token.LineNumber, startTime);
         }
-        catch (PascalSyntaxException)
-        {
-            // The syntax error was already reported by PascalErrorHandler.
-        }
-        catch (Exception)
+        catch (IOException)
         {
             PascalErrorHandler.AbortTranslation(PascalErrorCode.IoError, parser: this);
         }

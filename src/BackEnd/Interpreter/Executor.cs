@@ -10,15 +10,14 @@ namespace Backend.Interpreter;
 /// </summary>
 public class Executor : BackendProcessor
 {
-    private readonly Executor _rootExecutor;
-    private int _executionCount;
+    private readonly ExecutionContext _executionContext;
 
     /// <summary>
     /// Initializes the root interpreter executor.
     /// </summary>
     public Executor()
     {
-        _rootExecutor = this;
+        _executionContext = new();
     }
 
     /// <summary>
@@ -26,11 +25,10 @@ public class Executor : BackendProcessor
     /// </summary>
     /// <param name="parent">The executor whose intermediate code and symbol tables are reused.</param>
     protected Executor(Executor parent)
+        : base(parent)
     {
         ArgumentNullException.ThrowIfNull(parent);
-        _rootExecutor = parent._rootExecutor;
-        Code = parent.Code;
-        SymbolTableStack = parent.SymbolTableStack;
+        _executionContext = parent._executionContext;
     }
 
     /// <inheritdoc />
@@ -39,9 +37,7 @@ public class Executor : BackendProcessor
         ISymbolTableStack symbolTableStack
     )
     {
-        Code = intermediateCode;
-        SymbolTableStack = symbolTableStack;
-        _executionCount = 0;
+        _executionContext.BeginRun(intermediateCode, symbolTableStack);
 
         long startTime = Stopwatch.GetTimestamp();
 
@@ -51,8 +47,8 @@ public class Executor : BackendProcessor
         statementExecutor.Execute(rootNode);
 
         float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
-        int executionCount = _executionCount;
-        int runtimeErrors = RuntimeErrorHandler.ErrorCount;
+        int executionCount = _executionContext.ExecutionCount;
+        int runtimeErrors = _executionContext.RuntimeErrors.ErrorCount;
 
         SendMessage(
             new Message(
@@ -67,6 +63,16 @@ public class Executor : BackendProcessor
     /// </summary>
     protected void IncrementExecutionCount()
     {
-        ++_rootExecutor._executionCount;
+        _executionContext.IncrementExecutionCount();
     }
+
+    /// <summary>
+    /// Gets the runtime error handler shared by executors in this interpreter run.
+    /// </summary>
+    protected RuntimeErrorHandler RuntimeErrors => _executionContext.RuntimeErrors;
+
+    /// <summary>
+    /// Gets the execution state shared by executors in the current interpreter run.
+    /// </summary>
+    protected ExecutionContext ExecutionContext => _executionContext;
 }

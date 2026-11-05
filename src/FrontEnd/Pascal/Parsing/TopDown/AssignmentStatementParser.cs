@@ -1,4 +1,3 @@
-using FrontEnd.Pascal.ErrorHandling;
 using FrontEnd.Pascal.Tokens;
 using FrontEnd.Tokens;
 using Intermediate.Code.Implementations;
@@ -14,6 +13,13 @@ namespace FrontEnd.Pascal.Parsing.TopDown;
 /// <param name="parent">The parser that provides the scanner and parser state.</param>
 public sealed class AssignmentStatementParser(PascalParserTopDown parent) : StatementParser(parent)
 {
+    private static readonly HashSet<ITokenType> ColonEqualsSet =
+    [
+        .. ExpressionParser.ExpressionStartSet,
+        .. StatementFollowSet,
+        PascalTokenType.ColonEquals
+    ];
+
     /// <summary>
     /// Parses an assignment statement.
     /// </summary>
@@ -21,16 +27,16 @@ public sealed class AssignmentStatementParser(PascalParserTopDown parent) : Stat
     /// <returns>The intermediate-code node for the assignment.</returns>
     public override IIntermediateCodeNode Parse(Token token)
     {
-        ArgumentNullException.ThrowIfNull(token.Text);
         var assignCodeNode = IntermediateCodeFactory.CreateIntermediateCodeNode(IntermediateCodeNodeType.Assignment);
 
         // Look up the target identifier in the symbol table stack.
         // Enter the identifier into the table if it's not found.
-        string targetName = token.Text.ToLowerInvariant();
+        string targetText = token.Text ?? throw new ArgumentException("An assignment target requires text.", nameof(token));
+        string targetName = targetText.ToLowerInvariant();
         ISymbolTableEntry targetId = SymbolTableStack.Lookup(targetName) ?? SymbolTableStack.EnterLocal(targetName);
 
         targetId.AppendLineNumber(token.LineNumber);
-        token = NextToken();
+        _ = NextToken(); // consume the identifier token.
 
         var variableNode = IntermediateCodeFactory.CreateIntermediateCodeNode(IntermediateCodeNodeType.Variable);
         variableNode[IntermediateCodeKey.Id] = targetId;
@@ -38,11 +44,22 @@ public sealed class AssignmentStatementParser(PascalParserTopDown parent) : Stat
         // The ASSIGN node adops the variable node as its first child.
         assignCodeNode.AddChild(variableNode);
 
-        // Look for the := token.
+        // Synchronize on the := token.
+        token = Synchronize(ColonEqualsSet);
+
         if (token.Type == PascalTokenType.ColonEquals)
-            token = NextToken();
+        {
+            token = NextToken(); // consume the :=
+        }
         else
-            ErrorHandler.Flag(token, PascalErrorCode.MissingColonEquals, parser: this);
+        {
+            ErrorHandler.Flag(
+                token,
+                $"Expected := after assignment target \"{targetText}\"",
+                parser: this
+            );
+            return assignCodeNode;
+        }
 
         // Parse the expression. The ASSIGN node adopts the expression's node at its second child.
         ExpressionParser expressionParser = new(parent: this);

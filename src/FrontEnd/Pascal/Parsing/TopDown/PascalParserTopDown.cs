@@ -1,10 +1,13 @@
 using System.Diagnostics;
 using FrontEnd.Parsing;
 using FrontEnd.Pascal.ErrorHandling;
+using FrontEnd.Pascal.Symbols.Implementations;
 using FrontEnd.Pascal.Tokens;
+using FrontEnd.Pascal.Types.Implementations;
 using FrontEnd.Scanning;
 using FrontEnd.Tokens;
 using Intermediate.Code.Interfaces;
+using Intermediate.Symbols.Implementations;
 using Intermediate.Symbols.Interfaces;
 using Messaging;
 
@@ -13,20 +16,31 @@ namespace FrontEnd.Pascal.Parsing.TopDown;
 /// <summary>
 /// The top-down Pascal parser.
 /// </summary>
-/// <param name="scanner">The scanner that supplies Pascal tokens.</param>
-public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
+public class PascalParserTopDown : Parser
 {
     /// <summary>
     /// Handles syntax errors reported while parsing Pascal source.
     /// </summary>
-    protected static readonly PascalErrorHandler ErrorHandler = new();
+    protected PascalErrorHandler ErrorHandler => PascalContext.ErrorHandler;
+
+    /// <summary>
+    /// Gets the predefined Pascal types and constants for this translation.
+    /// </summary>
+    protected Predefined PascalPredefined => PascalContext.Predefined;
+
+    private PascalTranslationContext PascalContext => (PascalTranslationContext)TranslationContext;
+
+    /// <summary>
+    /// Creates the root top-down parser for one Pascal translation.
+    /// </summary>
+    /// <param name="scanner">The scanner that supplies Pascal tokens.</param>
+    public PascalParserTopDown(Scanner scanner) : base(scanner, new PascalTranslationContext()) { }
 
     /// <summary>
     /// Creates a parser that uses the scanner of an existing parser.
     /// </summary>
     /// <param name="parent">The parser whose scanner will be reused.</param>
-    public PascalParserTopDown(PascalParserTopDown parent)
-        : this(parent.Scanner) { }
+    public PascalParserTopDown(PascalParserTopDown parent) : base(parent) { }
 
     /// <summary>
     /// Processes Pascal tokens and publishes their diagnostics and parsing summary.
@@ -44,42 +58,29 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
                 token = NextToken();
                 ITokenType? tokenType = token.Type;
 
-                try
+                // Cross-reference only the identifiers.
+                if (tokenType == PascalTokenType.Identifier)
                 {
-                    // cross-reference only the identifiers.
-                    if (tokenType == PascalTokenType.Identifier)
+                    string? name = token.Text?.ToLowerInvariant();
+
+                    // If it's not already in the symbol table, create and enter a new entry for the identifier.
+                    if (!string.IsNullOrEmpty(name))
                     {
-                        string? name = token.Text?.ToLowerInvariant();
+                        ISymbolTableEntry entry =
+                            SymbolTableStack.Lookup(name) ?? SymbolTableStack.EnterLocal(name);
 
-                        // If it's not already in the symbol table, create & enter a new entry for the identifier.
-                        if (!string.IsNullOrEmpty(name))
-                        {
-                            ISymbolTableEntry entry =
-                                SymbolTableStack.Lookup(name) ?? SymbolTableStack.EnterLocal(name);
-
-                            entry.AppendLineNumber(token.LineNumber);
-                        }
-                        else if (tokenType == PascalTokenType.Error && token.Value != null)
-                            ErrorHandler.Flag(token, (PascalErrorCode)token.Value, parser: this);
+                        entry.AppendLineNumber(token.LineNumber);
                     }
-
-                    float tokenElapsedTime = (float)
-                        Stopwatch.GetElapsedTime(startTime).TotalSeconds;
-
-                    SendMessage(
-                        new Message(
-                            MessageType.ParserSummary,
-                            body: new object?[] { token.LineNumber, ErrorCount, tokenElapsedTime }
-                        )
-                    );
                 }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                    Console.WriteLine(ex.StackTrace);
 
-                    PascalErrorHandler.AbortTranslation(PascalErrorCode.IoError, parser: this);
-                }
+                float tokenElapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
+
+                SendMessage(
+                    new Message(
+                        MessageType.ParserSummary,
+                        body: new object?[] { token.LineNumber, ErrorCount, tokenElapsedTime }
+                    )
+                );
 
                 if (tokenType is null || tokenType == PascalTokenType.Error)
                 {
@@ -126,50 +127,52 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
     public override void Parse()
     {
         long startTime = Stopwatch.GetTimestamp();
+        IIntermediateCode iCode = Code;
+        PascalPredefined.Initialize(SymbolTableStack);
+
+        // Create a dummy program identifier symbol table entry.
+        ISymbolTableEntry routineId = SymbolTableStack.EnterLocal("dummyprogramname");
+        routineId[PascalSymbolTableKey.Definition] = Definition.Program;
+        SymbolTableStack.ProgramId = routineId;
+
+        /*
+         * Push a new symbol table onto the symbol table stack and set the
+         * routine's symbol table and intermediate code.
+         */
+        routineId[SymbolTableKey.RoutineSymbolTable] = SymbolTableStack.Push();
+        routineId[SymbolTableKey.RoutineIntermediateCode] = iCode;
+
+        BlockParser blockParser = new(this);
 
         try
         {
-            Token? token = NextToken();
-            IIntermediateCodeNode? rootNode = null;
+            Token token = NextToken();
 
-            // Look for the BEGIN token to parse a compund statement.
-            if (token.Type != PascalTokenType.Begin)
-                ErrorHandler.Flag(token, PascalErrorCode.UnexpectedToken, parser: this);
-            else
-            {
-                StatementParser statementParser = new(parent: this);
-                rootNode = statementParser.Parse(token);
-                token = CurrentToken();
-            }
+            // Parse a block.
+            IIntermediateCodeNode? rootNode = blockParser.Parse(token, routineId);
+            iCode.Root = rootNode;
+            SymbolTableStack.Pop();
 
             // Look for the final period.
-            if (token is not null && token.Type != PascalTokenType.Dot)
-                ErrorHandler.Flag(token, PascalErrorCode.MissingPeriod, parser: this);
-
             token = CurrentToken();
 
-            // Set the parse tree root node.
-            if (rootNode is not null)
-                Code.Root = rootNode;
+            if (token.Type != PascalTokenType.Dot)
+                ErrorHandler.Flag(token, PascalErrorCode.MissingPeriod, this);
+
+            token = CurrentToken();
 
             // Send the parser summary message.
             float elapsedTime = (float)Stopwatch.GetElapsedTime(startTime).TotalSeconds;
 
-            if (token is not null)
-            {
-                SendMessage(
-                    new Message(
-                        MessageType.ParserSummary,
-                        body: new[] { token.LineNumber, ErrorCount, elapsedTime }
-                    )
-                );
-            }
+            SendMessage(
+                new Message(
+                    MessageType.ParserSummary,
+                    body: new[] { token.LineNumber, ErrorCount, elapsedTime }
+                )
+            );
         }
-        catch (PascalSyntaxException)
-        {
-            // The syntax error was already reported by PascalErrorHandler.
-        }
-        catch (Exception)
+
+        catch (IOException)
         {
             PascalErrorHandler.AbortTranslation(PascalErrorCode.IoError, parser: this);
         }
@@ -181,34 +184,37 @@ public class PascalParserTopDown(Scanner scanner) : Parser(scanner)
     public override int ErrorCount => ErrorHandler.ErrorCount;
 
     /// <summary>
-    /// Synchronize the parser.
+    /// Advances past invalid tokens until a token in the synchronization set is found.
     /// </summary>
-    /// <param name="synchSet">The set of token types for synchronizing the parser.</param>
+    /// <param name="synchronizationSet">The token types at which parsing can safely resume.</param>
     /// <returns>The token where the parser has synchronized.</returns>
-    public Token? Synchronize(HashSet<ITokenType> synchSet)
+    public Token Synchronize(ISet<ITokenType> synchronizationSet)
     {
-        Token? token = CurrentToken();
+        ArgumentNullException.ThrowIfNull(synchronizationSet);
 
-        // If the current token is not in the synchronization set, then it is expected the parser must recover.
-        if (token?.Type != null && !synchSet.Contains(token.Type))
+        Token token = CurrentToken();
+
+        if (token.Type is null || synchronizationSet.Contains(token.Type))
+            return token;
+
+        ErrorHandler.Flag(token, PascalErrorCode.UnexpectedToken, this);
+
+        do
         {
-            // Flag the unexpected token.
-            ErrorHandler.Flag(token, PascalErrorCode.UnexpectedToken, this);
-
-            // Recover by skipping the tokens that are not int the synchronization set.
-            do
-            {
-                token = NextToken();
-            } while (NewMethod(synchSet, token));
-        }
+            token = NextToken();
+        } while (ShouldContinueSynchronizing(synchronizationSet, token));
 
         return token;
     }
 
-    private static bool NewMethod(HashSet<ITokenType> synchSet, Token? token)
+    private static bool ShouldContinueSynchronizing(
+        ISet<ITokenType> synchronizationSet,
+        Token token
+    )
     {
-        return token is not (null or EofToken)
-            && token.Type is not null
-            && !synchSet.Contains(token.Type);
+        if (token is EofToken)
+            return false;
+
+        return token.Type is null || !synchronizationSet.Contains(token.Type);
     }
 }

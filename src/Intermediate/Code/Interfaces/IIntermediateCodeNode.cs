@@ -25,6 +25,12 @@ public interface IIntermediateCodeNode
     IIntermediateCodeNode? AddChild(IIntermediateCodeNode? child);
 
     /// <summary>
+    /// Adds child nodes to this node in source order.
+    /// </summary>
+    /// <param name="children">The child nodes to add.</param>
+    void AddChildren(IEnumerable<IIntermediateCodeNode?> children);
+
+    /// <summary>
     /// Gets this node's children in source order.
     /// </summary>
     /// <returns>The child nodes.</returns>

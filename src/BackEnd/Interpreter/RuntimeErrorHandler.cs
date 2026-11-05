@@ -7,10 +7,18 @@ namespace Backend.Interpreter;
 /// <summary>
 /// Reports runtime errors raised while interpreting intermediate code.
 /// </summary>
-public static class RuntimeErrorHandler
+public sealed class RuntimeErrorHandler
 {
     private const int MaxErrors = 5;
-    public static int ErrorCount { get; private set; }
+    public int ErrorCount { get; private set; }
+
+    /// <summary>
+    /// Resets the error count before an interpreter run.
+    /// </summary>
+    public void Reset()
+    {
+        ErrorCount = 0;
+    }
 
     /// <summary>
     /// Reports a runtime error and associates it with the nearest enclosing source line.
@@ -18,7 +26,7 @@ public static class RuntimeErrorHandler
     /// <param name="codeNode">The node at which execution failed.</param>
     /// <param name="errorCode">The reported runtime error.</param>
     /// <param name="backend">The backend that publishes the error message.</param>
-    public static void Flag(IIntermediateCodeNode? codeNode, RuntimeErrorCode errorCode, BackendProcessor backend)
+    public void Flag(IIntermediateCodeNode? codeNode, RuntimeErrorCode errorCode, BackendProcessor backend)
     {
         // Look for the ancestor statement node with a line number attribute.
         while (codeNode is not null && codeNode[IntermediateCodeKey.Line] is null)

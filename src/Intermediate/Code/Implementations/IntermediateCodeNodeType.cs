@@ -36,7 +36,7 @@ public sealed record IntermediateCodeNodeType(string Name) : IIntermediateCodeNo
     /// <summary>Represents a branch of a selection statement.</summary>
     public static IntermediateCodeNodeType SelectBranch { get; } = new(nameof(SelectBranch));
     /// <summary>Represents a selection constant.</summary>
-    public static IntermediateCodeNodeType SelectConstant { get; } = new(nameof(SelectConstant));
+    public static IntermediateCodeNodeType SelectConstants { get; } = new(nameof(SelectConstants));
     /// <summary>Represents a statement with no operation.</summary>
     public static IntermediateCodeNodeType NoOp { get; } = new(nameof(NoOp));
 

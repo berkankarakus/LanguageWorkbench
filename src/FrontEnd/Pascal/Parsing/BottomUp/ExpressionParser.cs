@@ -44,6 +44,7 @@ public sealed class ExpressionParser(PascalParserBottomUp parent) : PascalParser
                 token = NextToken();
                 expectingOperand = false;
             }
+
             else if (tokenType == PascalTokenType.LeftParen)
             {
                 if (!expectingOperand)
@@ -52,6 +53,7 @@ public sealed class ExpressionParser(PascalParserBottomUp parent) : PascalParser
                 operators.Push((tokenType, IsUnary: false));
                 token = NextToken();
             }
+
             else if (tokenType == PascalTokenType.RightParen)
             {
                 if (expectingOperand)
@@ -61,6 +63,7 @@ public sealed class ExpressionParser(PascalParserBottomUp parent) : PascalParser
                 token = NextToken();
                 expectingOperand = false;
             }
+
             else if (IsOperator(tokenType))
             {
                 if (expectingOperand)
@@ -84,8 +87,11 @@ public sealed class ExpressionParser(PascalParserBottomUp parent) : PascalParser
                 token = NextToken();
                 expectingOperand = true;
             }
+
             else
+            {
                 ErrorHandler.Flag(token, PascalErrorCode.InvalidExpression, parser: this);
+            }
         }
 
         if (expectingOperand)
@@ -258,11 +264,9 @@ public sealed class ExpressionParser(PascalParserBottomUp parent) : PascalParser
             _ when tokenType == PascalTokenType.Equals => IntermediateCodeNodeType.Equal,
             _ when tokenType == PascalTokenType.NotEquals => IntermediateCodeNodeType.NotEqual,
             _ when tokenType == PascalTokenType.LessThan => IntermediateCodeNodeType.LessThan,
-            _ when tokenType == PascalTokenType.LessEquals =>
-                IntermediateCodeNodeType.LessThanOrEqual,
+            _ when tokenType == PascalTokenType.LessEquals => IntermediateCodeNodeType.LessThanOrEqual,
             _ when tokenType == PascalTokenType.GreaterThan => IntermediateCodeNodeType.GreaterThan,
-            _ when tokenType == PascalTokenType.GreaterEquals =>
-                IntermediateCodeNodeType.GreaterThanOrEqual,
+            _ when tokenType == PascalTokenType.GreaterEquals => IntermediateCodeNodeType.GreaterThanOrEqual,
             _ when tokenType == PascalTokenType.Plus => IntermediateCodeNodeType.Add,
             _ when tokenType == PascalTokenType.Minus => IntermediateCodeNodeType.Subtract,
             _ when tokenType == PascalTokenType.Or => IntermediateCodeNodeType.Or,
@@ -292,9 +296,11 @@ public sealed class ExpressionParser(PascalParserBottomUp parent) : PascalParser
             }
 
             entry.AppendLineNumber(token.LineNumber);
+
             var variableNode = IntermediateCodeFactory.CreateIntermediateCodeNode(
                 IntermediateCodeNodeType.Variable
             );
+
             variableNode[IntermediateCodeKey.Id] = entry;
             return variableNode;
         }
@@ -308,6 +314,7 @@ public sealed class ExpressionParser(PascalParserBottomUp parent) : PascalParser
                 IntermediateCodeNodeType.RealConstant,
                 token.Value
             );
+
             realNode[IntermediateCodeKey.SourceText] = token.Text;
             return realNode;
         }

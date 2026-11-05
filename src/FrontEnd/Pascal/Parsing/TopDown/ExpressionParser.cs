@@ -76,6 +76,19 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
         [PascalTokenType.GreaterEquals] = IntermediateCodeNodeType.GreaterThanOrEqual
     };
 
+    // Synchronization set for starting an expression.
+    internal static readonly HashSet<ITokenType> ExpressionStartSet =
+    [
+        PascalTokenType.Plus,
+        PascalTokenType.Minus,
+        PascalTokenType.Identifier,
+        PascalTokenType.Integer,
+        PascalTokenType.Real,
+        PascalTokenType.String,
+        PascalTokenType.Not,
+        PascalTokenType.LeftParen
+    ];
+
     /// <summary>
     /// Parses an expression beginning with the specified token.
     /// </summary>
@@ -86,13 +99,13 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
         return ParseExpression(token);
     }
 
-    private IIntermediateCodeNode? ParseExpression(Token? token)
+    private IIntermediateCodeNode? ParseExpression(Token token)
     {
         // The first simple expression forms the initial expression tree.
         IIntermediateCodeNode? rootNode = ParseSimpleExpression(token);
         token = CurrentToken();
 
-        if (token?.Type is null)
+        if (token.Type is null)
             return rootNode;
 
         ITokenType tokenType = token.Type;
@@ -118,12 +131,12 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
     /// Parses a simple expression.
     /// </summary>
     /// <returns>The intermediate-code node for the simple expression.</returns>
-    private IIntermediateCodeNode? ParseSimpleExpression(Token? token)
+    private IIntermediateCodeNode? ParseSimpleExpression(Token token)
     {
         ITokenType? signType = null;
 
         // Look for a leading + or - sign.
-        ITokenType? tokenType = token?.Type;
+        ITokenType? tokenType = token.Type;
 
         if (tokenType == PascalTokenType.Plus || tokenType == PascalTokenType.Minus)
         {
@@ -144,7 +157,7 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
         }
 
         token = CurrentToken();
-        tokenType = token?.Type;
+        tokenType = token.Type;
 
         // Loop over additive operators.
         while (tokenType is not null && AddOps.Contains(tokenType))
@@ -164,7 +177,7 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
             rootNode = opNode;
 
             token = CurrentToken();
-            tokenType = token?.Type;
+            tokenType = token.Type;
         }
 
         return rootNode;
@@ -174,7 +187,7 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
     /// Parses a term within a simple expression.
     /// </summary>
     /// <returns>The intermediate-code node for the term.</returns>
-    public IIntermediateCodeNode? ParseTerm(Token? token)
+    public IIntermediateCodeNode? ParseTerm(Token token)
     {
         // Parse a factor & make its node the root node.
         IIntermediateCodeNode? codeNode = ParseFactor(token);
@@ -182,7 +195,7 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
 
         // Get the operator.
         token = CurrentToken();
-        ITokenType? tokenType = token?.Type;
+        ITokenType? tokenType = token.Type;
 
         while (tokenType is not null && MultOps.Contains(tokenType))
         {
@@ -201,7 +214,7 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
             rootNode = opNode;
 
             token = CurrentToken();
-            tokenType = token?.Type;
+            tokenType = token.Type;
         }
 
         return rootNode;
@@ -211,12 +224,12 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
     /// Parses a factor within a term.
     /// </summary>
     /// <returns>The intermediate-code node for the factor.</returns>
-    public IIntermediateCodeNode? ParseFactor(Token? token)
+    public IIntermediateCodeNode? ParseFactor(Token token)
     {
-        ITokenType? tokenType = token?.Type;
+        ITokenType? tokenType = token.Type;
         IIntermediateCodeNode? rootNode = null;
 
-        if (token?.Text is null || tokenType is null)
+        if (token.Text is null || tokenType is null)
             return rootNode;
 
         if (tokenType == PascalTokenType.Identifier)
@@ -291,7 +304,7 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
             // Look for mathing ).
             token = CurrentToken();
 
-            if (token is not null)
+            if (token is not EofToken)
             {
                 if (token.Type == PascalTokenType.RightParen)
                 {
@@ -300,12 +313,16 @@ public class ExpressionParser(PascalParserTopDown parent) : StatementParser(pare
                 }
 
                 else
+                {
                     ErrorHandler.Flag(token, PascalErrorCode.MissingRightParen, parser: this);
+                }
             }
         }
 
         else
+        {
             ErrorHandler.Flag(token, PascalErrorCode.UnexpectedToken, parser: this);
+        }
 
         return rootNode;
     }

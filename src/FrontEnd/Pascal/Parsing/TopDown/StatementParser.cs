@@ -3,6 +3,7 @@ using FrontEnd.Pascal.Tokens;
 using FrontEnd.Tokens;
 using Intermediate.Code.Implementations;
 using Intermediate.Code.Interfaces;
+using Intermediate.Factory;
 
 namespace FrontEnd.Pascal.Parsing.TopDown;
 
@@ -12,6 +13,29 @@ namespace FrontEnd.Pascal.Parsing.TopDown;
 /// <param name="parent">The parser that provides the scanner and parser state.</param>
 public class StatementParser(PascalParserTopDown parent) : PascalParserTopDown(parent)
 {
+    // Synchronization set for starting a statement.
+    protected static readonly HashSet<ITokenType> StatementStartSet =
+    [
+        PascalTokenType.Begin,
+        PascalTokenType.Case,
+        PascalTokenType.For,
+        PascalTokenType.If,
+        PascalTokenType.Repeat,
+        PascalTokenType.While,
+        PascalTokenType.Identifier,
+        PascalTokenType.SemiColon,
+    ];
+
+    // Synchronization set for following a statement.
+    protected internal static readonly HashSet<ITokenType> StatementFollowSet =
+    [
+        PascalTokenType.SemiColon,
+        PascalTokenType.End,
+        PascalTokenType.Else,
+        PascalTokenType.Until,
+        PascalTokenType.Dot,
+    ];
+
     /// <summary>
     /// Parses a statement beginning with the specified token.
     /// </summary>
@@ -23,25 +47,54 @@ public class StatementParser(PascalParserTopDown parent) : PascalParserTopDown(p
 
         if (token.Type == PascalTokenType.Begin)
         {
-            CompoundStatementParser compoundStatementParser = new(parent: this);
+            CompoundStatementParser compoundStatementParser = new(this);
             statementNode = compoundStatementParser.Parse(token);
         }
 
         else if (token.Type == PascalTokenType.Identifier)
         {
-            AssignmentStatementParser assignmentStatementParser = new(parent: this);
-            statementNode = assignmentStatementParser.Parse(token);
+            AssignmentStatementParser assignmentParser = new(this);
+            statementNode = assignmentParser.Parse(token);
+        }
+
+        else if (token.Type == PascalTokenType.Repeat)
+        {
+            RepeatStatementParser repeatStatementParser = new(this);
+            statementNode = repeatStatementParser.Parse(token);
+        }
+
+        else if (token.Type == PascalTokenType.While)
+        {
+            WhileStatementParser whileStatementParser = new(this);
+            statementNode = whileStatementParser.Parse(token);
+        }
+
+        else if (token.Type == PascalTokenType.For)
+        {
+            ForStatementParser forStatementParser = new(this);
+            statementNode = forStatementParser.Parse(token);
+        }
+
+        else if (token.Type == PascalTokenType.If)
+        {
+            IfStatementParser ifStatementParser = new(this);
+            statementNode = ifStatementParser.Parse(token);
+        }
+
+        else if (token.Type == PascalTokenType.Case)
+        {
+            CaseStatementParser caseStatementParser = new(this);
+            statementNode = caseStatementParser.Parse(token);
         }
 
         else
         {
-            // Do not return a no-op node without consuming the token. ParseList would then retry
-            // the same token indefinitely.
-            ErrorHandler.Flag(token, PascalErrorCode.UnexpectedToken, parser: this);
-            return null;
+            statementNode = IntermediateCodeFactory.CreateIntermediateCodeNode(
+                IntermediateCodeNodeType.NoOp
+            );
         }
 
-        // Set the current line number as an attribute.
+        // Set the current line as an attribute.
         SetLineNumber(statementNode, token);
 
         return statementNode;
@@ -58,54 +111,53 @@ public class StatementParser(PascalParserTopDown parent) : PascalParserTopDown(p
     /// <param name="terminator">The token that ends the statement list.</param>
     /// <param name="errorCode">The error code to report when the terminator is missing.</param>
     protected internal void ParseList(
-        Token? token,
+        Token token,
         IIntermediateCodeNode parentNode,
         PascalTokenType terminator,
         PascalErrorCode errorCode
     )
     {
-        // Loop to parse each statement until the END token or the end of the source file.
-        while (token is not (null or EofToken) && token.Type != terminator)
+        HashSet<ITokenType> synchronizationSet = [
+            .. StatementStartSet,
+            .. StatementFollowSet,
+            terminator
+        ];
+
+        token = Synchronize(synchronizationSet);
+
+        // Loop to parse each statement until the terminator or the end of the source file.
+        while (token is not EofToken && token.Type != terminator)
         {
             // Parse a statement. The parent node adopts the statement code.
+            int errorCountBeforeStatement = ErrorHandler.ErrorCount;
             IIntermediateCodeNode? statementNode = Parse(token);
             parentNode.AddChild(statementNode);
 
             token = CurrentToken();
-
-            if (token?.Type is null)
-                continue;
-
-            ITokenType tokenType = token.Type;
+            bool statementHasError = ErrorHandler.ErrorCount > errorCountBeforeStatement;
 
             // Look for the semicolon between statements.
-            if (tokenType == PascalTokenType.SemiColon)
-                token = NextToken(); // consume the semicolon
+            if (token.Type == PascalTokenType.SemiColon)
+                _ = NextToken(); // consume the semicolon
 
-            // If at the start of the next assingment statement, then missing a semicolon.
-            else if (tokenType == PascalTokenType.Identifier)
-                ErrorHandler.Flag(token, PascalErrorCode.MissingSemicolon, parser: this);
+            // If at the start of the next statement, then missing a semicolon.
+            else if (token.Type is not null && token.Type != terminator && !statementHasError)
+                ErrorHandler.Flag(token, PascalErrorCode.MissingSemicolon, this);
 
-            // Unexpected token
-            else if (tokenType == terminator)
-            {
-                ErrorHandler.Flag(token, PascalErrorCode.UnexpectedToken, parser: this);
-                token = NextToken(); // consume the unexpected token
-            }
+            // Synchronize at the start of the next statement.
+            token = Synchronize(synchronizationSet);
         }
 
         // Look for the terminator token.
-        if (token is null)
-            return;
-
         if (token.Type == terminator)
             _ = NextToken();
+
         else
             ErrorHandler.Flag(token, errorCode, parser: this);
     }
 
-    private static void SetLineNumber(IIntermediateCodeNode statementNode, Token token)
+    private static void SetLineNumber(IIntermediateCodeNode? statementNode, Token token)
     {
-        statementNode[IntermediateCodeKey.Line] = token.LineNumber;
+        statementNode?[IntermediateCodeKey.Line] = token.LineNumber;
     }
 }

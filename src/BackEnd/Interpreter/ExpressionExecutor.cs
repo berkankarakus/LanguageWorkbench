@@ -28,7 +28,7 @@ public class ExpressionExecutor(Executor parent) : Executor(parent)
     /// <returns>The evaluated value, or <see langword="null"/> when no value can be produced.</returns>
     public object? Execute(IIntermediateCodeNode? node)
     {
-        ArgumentNullException.ThrowIfNull(Code);
+        ArgumentNullException.ThrowIfNull(ExecutionContext.Code);
 
         if (node is null)
             return null;
@@ -95,7 +95,9 @@ public class ExpressionExecutor(Executor parent) : Executor(parent)
             nodeType.Equals(IntermediateCodeNodeType.And)
             || nodeType.Equals(IntermediateCodeNodeType.Or)
         )
+        {
             return ExecuteBooleanOperation(nodeType, operand1, operand2);
+        }
 
         return ExecuteRelationalOperation(nodeType, operand1, operand2);
     }
@@ -116,7 +118,9 @@ public class ExpressionExecutor(Executor parent) : Executor(parent)
                 out int integer2
             )
         )
+        {
             return ExecuteIntegerOperation(node, nodeType, integer1, integer2);
+        }
 
         if (!TryGetRealOperands(operand1, operand2, out double real1, out double real2))
             return null;
@@ -176,7 +180,7 @@ public class ExpressionExecutor(Executor parent) : Executor(parent)
         if (divisor != 0)
             return dividend / divisor;
 
-        RuntimeErrorHandler.Flag(node, RuntimeErrorCode.DivisionByZero, this);
+        RuntimeErrors.Flag(node, RuntimeErrorCode.DivisionByZero, this);
         return 0;
     }
 
@@ -185,7 +189,7 @@ public class ExpressionExecutor(Executor parent) : Executor(parent)
         if (divisor != 0)
             return dividend % divisor;
 
-        RuntimeErrorHandler.Flag(node, RuntimeErrorCode.DivisionByZero, this);
+        RuntimeErrors.Flag(node, RuntimeErrorCode.DivisionByZero, this);
         return 0;
     }
 
@@ -194,7 +198,7 @@ public class ExpressionExecutor(Executor parent) : Executor(parent)
         if (divisor != 0)
             return dividend / divisor;
 
-        RuntimeErrorHandler.Flag(node, RuntimeErrorCode.DivisionByZero, this);
+        RuntimeErrors.Flag(node, RuntimeErrorCode.DivisionByZero, this);
         return 0.0;
     }
 
@@ -263,7 +267,7 @@ public class ExpressionExecutor(Executor parent) : Executor(parent)
         value1 = default;
         value2 = default;
 
-        return nodeType != IntermediateCodeNodeType.FloatDivide
+        return !nodeType.Equals(IntermediateCodeNodeType.FloatDivide)
             && operand1 is int integer1
             && operand2 is int integer2
             && AssignIntegerOperands(integer1, integer2, out value1, out value2);

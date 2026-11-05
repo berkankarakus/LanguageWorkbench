@@ -16,30 +16,50 @@ public sealed class StatementExecutor(Executor parent) : Executor(parent)
     /// <param name="node">The statement node to execute.</param>
     public object? Execute(IIntermediateCodeNode? node)
     {
-        ArgumentNullException.ThrowIfNull(Code);
+        ArgumentNullException.ThrowIfNull(ExecutionContext.Code);
 
         if (node is null)
             return null;
 
+        var nodeType = node.Type;
+
         // Send a message about the current source line.
         SendSourceLineMessage(node);
 
-        if (IntermediateCodeNodeType.Compound.Equals(node.Type))
+        if (IntermediateCodeNodeType.Compound.Equals(nodeType))
         {
             CompoundExecutor compoundExecutor = new(this);
             return compoundExecutor.Execute(node);
         }
 
-        if (IntermediateCodeNodeType.Assignment.Equals(node.Type))
+        if (IntermediateCodeNodeType.Assignment.Equals(nodeType))
         {
             AssignmentExecutor assignmentExecutor = new(this);
             return assignmentExecutor.Execute(node);
         }
 
-        if (IntermediateCodeNodeType.NoOp.Equals(node.Type))
+        if (IntermediateCodeNodeType.Loop.Equals(nodeType))
+        {
+            LoopExecutor loopExecutor = new(this);
+            return loopExecutor.Execute(node);
+        }
+
+        if (IntermediateCodeNodeType.If.Equals(nodeType))
+        {
+            IfExecutor ifExecutor = new(this);
+            return ifExecutor.Execute(node);
+        }
+
+        if (IntermediateCodeNodeType.Select.Equals(nodeType))
+        {
+            JumpTableSelectExecutor selectExecutor = new(this);
+            return selectExecutor.Execute(node);
+        }
+
+        if (IntermediateCodeNodeType.NoOp.Equals(nodeType))
             return null;
 
-        RuntimeErrorHandler.Flag(node, RuntimeErrorCode.UnimplementedFeature, this);
+        RuntimeErrors.Flag(node, RuntimeErrorCode.UnimplementedFeature, this);
         return null;
     }
 

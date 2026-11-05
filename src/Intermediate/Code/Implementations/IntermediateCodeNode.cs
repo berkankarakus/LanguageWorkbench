@@ -21,7 +21,7 @@ public class IntermediateCodeNode(IIntermediateCodeNodeType nodeType) : IInterme
     /// <summary>
     /// Gets the attributes associated with this node.
     /// </summary>
-    public Dictionary<IIntermediateCodeKey, object> Attributes { get; } = new();
+    public Dictionary<IIntermediateCodeKey, object> Attributes { get; } = [];
 
     /// <inheritdoc />
     public IIntermediateCodeNode? AddChild(IIntermediateCodeNode? child)
@@ -33,6 +33,15 @@ public class IntermediateCodeNode(IIntermediateCodeNodeType nodeType) : IInterme
         child.Parent = this;
 
         return child;
+    }
+
+    /// <inheritdoc />
+    public void AddChildren(IEnumerable<IIntermediateCodeNode?> children)
+    {
+        ArgumentNullException.ThrowIfNull(children);
+
+        foreach (IIntermediateCodeNode? child in children)
+            AddChild(child);
     }
 
     /// <inheritdoc />
