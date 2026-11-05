@@ -1,12 +1,16 @@
 using Messaging;
+using System.Globalization;
 
 namespace LanguageWorkbench.Cli.Listeners;
 
 /// <summary>
 /// Renders messages produced by a compiler or interpreter back end.
 /// </summary>
-public class BackendMessageListener : IMessageListener
+/// <param name="useColor">Whether terminal colors should be used for output.</param>
+public class BackendMessageListener(bool useColor = false) : IMessageListener
 {
+    private const string OutputPrecisionEnvironmentVariable = "LANGUAGE_WORKBENCH_OUTPUT_PRECISION";
+    private readonly bool _useColor = useColor;
     private bool _isFirstOutputMessage = true;
 
     /// <summary>
@@ -21,9 +25,7 @@ public class BackendMessageListener : IMessageListener
                 when message.Body
                     is object?[]
                         and [int executionCount, int runtimeErrorCount, float elapsedTime]:
-                Console.WriteLine(
-                    $"\n{executionCount,10} statements executed.\n{runtimeErrorCount,10} runtime errors.\n{elapsedTime,10:F2} seconds total execution time."
-                );
+                PrintInterpreterSummary(executionCount, runtimeErrorCount, elapsedTime);
                 break;
 
             case MessageType.CompilerSummary
@@ -49,10 +51,91 @@ public class BackendMessageListener : IMessageListener
     {
         if (_isFirstOutputMessage)
         {
-            Console.WriteLine("\n===== OUTPUT =====");
+            Console.WriteLine();
+            WriteColored("===== OUTPUT =====", ConsoleColor.Cyan);
+            Console.WriteLine();
             _isFirstOutputMessage = false;
         }
 
-        Console.WriteLine($" >>> LINE {lineNumber:000}: {variableName} = {value}");
+        WriteColored("LINE ", ConsoleColor.Cyan);
+        WriteColored($"{lineNumber:000}", ConsoleColor.Magenta);
+        Console.Write(": ");
+        WriteColored(variableName, ConsoleColor.Yellow);
+        Console.Write(" = ");
+        WriteColored(FormatValue(value), GetValueColor(value));
+        Console.WriteLine();
+    }
+
+    private void PrintInterpreterSummary(int executionCount, int runtimeErrorCount, float elapsedTime)
+    {
+        Console.WriteLine();
+        WriteColored($"{executionCount,10}", ConsoleColor.Magenta);
+        WriteColored(" statements executed.", ConsoleColor.Cyan);
+        Console.WriteLine();
+        WriteColored($"{runtimeErrorCount,10}", ConsoleColor.Magenta);
+        WriteColored(" runtime errors.", ConsoleColor.Cyan);
+        Console.WriteLine();
+        WriteColored($"{elapsedTime,10:F2}", ConsoleColor.Magenta);
+        WriteColored(" seconds total execution time.", ConsoleColor.Cyan);
+        Console.WriteLine();
+    }
+
+    private static string FormatValue(object? value)
+    {
+        int? precision = GetOutputPrecision();
+
+        return value switch
+        {
+            float floatValue => FormatFloatingPoint(floatValue, precision),
+            double doubleValue => FormatFloatingPoint(doubleValue, precision),
+            _ => value?.ToString() ?? "null"
+        };
+    }
+
+    private static string FormatFloatingPoint(float value, int? precision) => value.ToString(
+        precision is int valuePrecision ? $"G{valuePrecision}" : null,
+        CultureInfo.CurrentCulture
+    );
+
+    private static string FormatFloatingPoint(double value, int? precision) => value.ToString(
+        precision is int valuePrecision ? $"G{valuePrecision}" : null,
+        CultureInfo.CurrentCulture
+    );
+
+    private static int? GetOutputPrecision()
+    {
+        string? value = Environment.GetEnvironmentVariable(OutputPrecisionEnvironmentVariable);
+
+        return int.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out int precision)
+            && precision is > 0 and <= 17
+            ? precision
+            : null;
+    }
+
+    private static ConsoleColor GetValueColor(object? value) => value switch
+    {
+        string or char => ConsoleColor.Green,
+        _ => ConsoleColor.Magenta
+    };
+
+    private void WriteColored(string text, ConsoleColor color)
+    {
+        if (!_useColor)
+        {
+            Console.Write(text);
+            return;
+        }
+
+        ConsoleColor previousColor = Console.ForegroundColor;
+
+        try
+        {
+            Console.ForegroundColor = color;
+            Console.Write(text);
+        }
+        finally
+        {
+            Console.ForegroundColor = previousColor;
+        }
     }
 }

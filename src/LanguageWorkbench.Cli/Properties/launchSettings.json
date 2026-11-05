@@ -3,7 +3,7 @@
   "profiles": {
     "LanguageWorkbench.Cli": {
       "commandName": "Project",
-      "commandLineArgs": "execute -i assignments.pas",
+      "commandLineArgs": "compile -i while.pas",
       "workingDirectory": "$(ProjectDir)",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development",

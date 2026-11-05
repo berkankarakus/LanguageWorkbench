@@ -13,7 +13,7 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
     /// <summary>Marks the end of the source stream.</summary>
     public const char EndOfFile = '\0';
 
-    private static readonly MessageHandler MessageHandler = new();
+    private readonly MessageHandler _messageHandler = new();
     private readonly TextReader _reader = reader ?? throw new ArgumentNullException(nameof(reader));
     private string? _line;
 
@@ -118,7 +118,7 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
     /// <param name="listener">The listener to add.</param>
     public void AddMessageListener(IMessageListener listener)
     {
-        MessageHandler.AddListener(listener);
+        _messageHandler.AddListener(listener);
     }
 
     /// <summary>
@@ -127,7 +127,7 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
     /// <param name="listener">The listener to remove.</param>
     public void RemoveMessageListener(IMessageListener listener)
     {
-        MessageHandler.RemoveListener(listener);
+        _messageHandler.RemoveListener(listener);
     }
 
     /// <summary>
@@ -136,7 +136,7 @@ public sealed class SourceReader(TextReader reader) : IMessageProducer, IDisposa
     /// <param name="message">The message to publish.</param>
     public void SendMessage(Message message)
     {
-        MessageHandler.SendMessage(message);
+        _messageHandler.SendMessage(message);
     }
 
     /// <inheritdoc />

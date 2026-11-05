@@ -22,6 +22,19 @@ public class PascalErrorHandler
     /// <param name="parser">The parser that publishes the diagnostic.</param>
     public void Flag(Token token, PascalErrorCode errorCode, Parser parser)
     {
+        Flag(token, errorCode.Message, parser);
+    }
+
+    /// <summary>
+    /// Reports a syntax error with a context-specific message.
+    /// </summary>
+    /// <param name="token">The token associated with the error.</param>
+    /// <param name="message">The diagnostic message to report.</param>
+    /// <param name="parser">The parser that publishes the diagnostic.</param>
+    public void Flag(Token token, string message, Parser parser)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+
         parser.SendMessage(new(
             MessageType.SyntaxError,
             new object?[]
@@ -29,12 +42,11 @@ public class PascalErrorHandler
                 token.LineNumber,
                 token.Position,
                 token.Text,
-                errorCode.Message
+                message
             })
         );
 
         ++ErrorCount;
-        throw new PascalSyntaxException();
     }
 
     /// <summary>
@@ -59,8 +71,3 @@ public class PascalErrorHandler
         Environment.Exit(errorCode.Status);
     }
 }
-
-/// <summary>
-/// Signals that parsing must stop after a reported Pascal syntax error.
-/// </summary>
-internal sealed class PascalSyntaxException : Exception;

@@ -56,8 +56,16 @@ public class Pascal
         try
         {
             using SourceReader source = new(File.OpenText(_filePath));
-            ParserMessageListener parserMessageListener = new(ShouldShowTokens());
-            source.AddMessageListener(new SourceMessageListener(parserMessageListener.FlushTokens));
+            ParserMessageListener parserMessageListener = new(
+                ShouldShowTokens(),
+                useColor: !Console.IsOutputRedirected
+            );
+            source.AddMessageListener(
+                new SourceMessageListener(
+                    parserMessageListener.FlushTokens,
+                    useColor: !Console.IsOutputRedirected
+                )
+            );
 
             PascalFrontEndFactory<PascalParserTopDown> factory = new(
                 scanner => new PascalParserTopDown(scanner)
@@ -66,7 +74,7 @@ public class Pascal
             parser.AddMessageListener(parserMessageListener);
 
             BackendProcessor backEnd = BackendFactory.Create(_operation);
-            backEnd.AddMessageListener(new BackendMessageListener());
+            backEnd.AddMessageListener(new BackendMessageListener(useColor: !Console.IsOutputRedirected));
 
             parser.Parse();
 
@@ -74,14 +82,17 @@ public class Pascal
                 return;
 
             IIntermediateCode iCode = parser.Code;
-            ISymbolTableStack symbolTableStack = Parser.SymbolTableStack;
+            ISymbolTableStack symbolTableStack = parser.SymbolTableStack;
 
             if (_crossReference)
                 CrossReferencer.Print(symbolTableStack);
 
             if (_intermediate)
             {
-                ParseTreePrinter parseTreePrinter = new(Console.Out);
+                ParseTreePrinter parseTreePrinter = new(
+                    Console.Out,
+                    useColor: !Console.IsOutputRedirected
+                );
                 parseTreePrinter.Print(iCode);
             }
 

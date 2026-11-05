@@ -4,6 +4,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E37E7BF1-9400-4E79-A2DC-5C4420BEB848}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{073B373A-4BCA-46CD-B623-BD337CA15B29}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FrontEnd", "src\FrontEnd\FrontEnd.csproj", "{A9C780F9-9759-467B-861E-25100D2E6FD7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Intermediate", "src\Intermediate\Intermediate.csproj", "{AC5B0CD1-56D7-4BCD-A88D-B30A3B889043}"
@@ -18,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageWorkbench.Cli", "src\LanguageWorkbench.Cli\LanguageWorkbench.Cli.csproj", "{44DD913A-E7EB-4573-9EF6-5BE431F0ACCE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageWorkbench.Tests", "tests\LanguageWorkbench.Tests\LanguageWorkbench.Tests.csproj", "{B10B37A6-4E3E-4C98-9F2C-8D66C3ADCE89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +49,10 @@ Global
 		{44DD913A-E7EB-4573-9EF6-5BE431F0ACCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44DD913A-E7EB-4573-9EF6-5BE431F0ACCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44DD913A-E7EB-4573-9EF6-5BE431F0ACCE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B10B37A6-4E3E-4C98-9F2C-8D66C3ADCE89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B10B37A6-4E3E-4C98-9F2C-8D66C3ADCE89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B10B37A6-4E3E-4C98-9F2C-8D66C3ADCE89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B10B37A6-4E3E-4C98-9F2C-8D66C3ADCE89}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A9C780F9-9759-467B-861E-25100D2E6FD7} = {E37E7BF1-9400-4E79-A2DC-5C4420BEB848}
@@ -52,5 +60,6 @@ Global
 		{6D7FBB4A-BE0E-4128-BEB8-2ECEFCA66737} = {E37E7BF1-9400-4E79-A2DC-5C4420BEB848}
 		{6D347736-F92F-406B-A348-3F7ECFD4D836} = {E37E7BF1-9400-4E79-A2DC-5C4420BEB848}
 		{44DD913A-E7EB-4573-9EF6-5BE431F0ACCE} = {E37E7BF1-9400-4E79-A2DC-5C4420BEB848}
+		{B10B37A6-4E3E-4C98-9F2C-8D66C3ADCE89} = {073B373A-4BCA-46CD-B623-BD337CA15B29}
 	EndGlobalSection
 EndGlobal

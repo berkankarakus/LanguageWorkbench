@@ -6,8 +6,11 @@ namespace LanguageWorkbench.Cli.Listeners;
 /// Writes source lines received from the front end to the console.
 /// </summary>
 /// <param name="flushTokens">Flushes token output before the next source line is written.</param>
-public sealed class SourceMessageListener(Action flushTokens) : IMessageListener
+/// <param name="useColor">Whether terminal colors should be used for source code.</param>
+public sealed class SourceMessageListener(Action flushTokens, bool useColor = false) : IMessageListener
 {
+    private readonly PascalSourceHighlighter _highlighter = new(useColor);
+
     /// <summary>
     /// Called by the source whenever it produces a message.
     /// </summary>
@@ -19,7 +22,7 @@ public sealed class SourceMessageListener(Action flushTokens) : IMessageListener
         {
             case MessageType.SourceLine when message.Body is object?[] and [int lineNumber, string lineText]:
                 flushTokens();
-                Console.WriteLine($"{lineNumber,3:D3} {lineText}");
+                _highlighter.WriteLine(lineNumber, lineText);
                 break;
 
             default:

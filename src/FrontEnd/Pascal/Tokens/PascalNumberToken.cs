@@ -45,8 +45,9 @@ public class PascalNumberToken(SourceReader source) : PascalToken(source)
         if (currentChar == '.')
         {
             if (PeekChar() == '.')
+            {
                 sawDotDot = true;
-
+            }
             else
             {
                 Type = PascalTokenType.Real; // decimal point, so token type is REAL

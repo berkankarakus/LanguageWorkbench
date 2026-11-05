@@ -62,7 +62,7 @@ public sealed class PascalTokenType : ITokenType
     public static PascalTokenType SemiColon { get; } = new(";");
     public static PascalTokenType Colon { get; } = new(":");
     public static PascalTokenType Quote { get; } = new("'");
-    public new static PascalTokenType Equals { get; } = new("=");
+    public static new PascalTokenType Equals { get; } = new("=");
     public static PascalTokenType NotEquals { get; } = new("<>");
     public static PascalTokenType LessThan { get; } = new("<");
     public static PascalTokenType LessEquals { get; } = new("<=");

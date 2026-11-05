@@ -20,6 +20,15 @@ dotnet_style_prefer_collection_expression = true:suggestion
 dotnet_style_prefer_primary_constructors = true:suggestion
 csharp_style_namespace_declarations = file_scoped:suggestion
 
+# Keep each branch visually distinct; Roslyn supports a new line before else,
+# but does not support inserting a completely blank line there.
+csharp_new_line_before_else = true
+
+# Use braces for multi-line bodies only. IDE0011 exposes a Remove braces code action
+# for single-statement if / else-if / else branches.
+csharp_prefer_braces = when_multiline:suggestion
+dotnet_diagnostic.IDE0011.severity = suggestion
+
 # This interface models a symbol-table stack; its domain-specific name is intentional.
 [src/Intermediate/Symbols/Interfaces/ISymbolTableStack.cs]
 dotnet_diagnostic.CA1711.severity = none

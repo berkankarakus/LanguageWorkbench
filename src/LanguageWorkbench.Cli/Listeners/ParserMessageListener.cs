@@ -1,4 +1,3 @@
-using System.Text;
 using FrontEnd.Pascal.Tokens;
 using FrontEnd.Tokens;
 using Messaging;
@@ -9,9 +8,11 @@ namespace LanguageWorkbench.Cli.Listeners;
 /// Writes parser diagnostics and summary information to the console.
 /// </summary>
 /// <param name="showTokens">Whether token information should be written.</param>
-public sealed class ParserMessageListener(bool showTokens) : IMessageListener
+/// <param name="useColor">Whether terminal colors should be used for diagnostics.</param>
+public sealed class ParserMessageListener(bool showTokens, bool useColor = false) : IMessageListener
 {
     private const int PrefixWidth = 5;
+    private readonly bool _useColor = useColor;
     private readonly List<string> _pendingTokenLines = [];
 
     /// <summary>
@@ -62,23 +63,46 @@ public sealed class ParserMessageListener(bool showTokens) : IMessageListener
 
             case MessageType.SyntaxError
                 when body is [_, int position, var tokenText, string errorMessage]:
-
                 int spaceCount = PrefixWidth + position;
-                StringBuilder flagBuffer = new();
+                string indentation = new(' ', spaceCount - 1);
 
-                for (int i = 1; i < spaceCount; ++i)
-                    flagBuffer.Append(' ');
+                WriteColored(indentation + "^", ConsoleColor.Red);
+                Console.WriteLine();
 
-                // A pointer to the error followed by the error message.
-                flagBuffer.Append("^\n*** ").Append(errorMessage);
+                WriteColored("error: " + errorMessage, ConsoleColor.Red);
 
-                // Text, if any. of the bad token.
+                // Text, if any, of the bad token.
                 if (tokenText is string tokenTextValue && !string.IsNullOrWhiteSpace(tokenTextValue))
-                    flagBuffer.Append(" [at \"").Append(tokenTextValue).Append("\"]");
+                {
+                    Console.Write(" [at \"");
+                    WriteColored(tokenTextValue, ConsoleColor.Yellow);
+                    Console.Write("\"]");
+                }
 
-                Console.WriteLine(flagBuffer.ToString());
+                Console.WriteLine();
                 FlushTokens();
                 break;
+        }
+    }
+
+    private void WriteColored(string text, ConsoleColor color)
+    {
+        if (!_useColor)
+        {
+            Console.Write(text);
+            return;
+        }
+
+        ConsoleColor previousColor = Console.ForegroundColor;
+
+        try
+        {
+            Console.ForegroundColor = color;
+            Console.Write(text);
+        }
+        finally
+        {
+            Console.ForegroundColor = previousColor;
         }
     }
 }
