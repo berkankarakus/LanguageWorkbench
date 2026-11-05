@@ -5,7 +5,7 @@ namespace FrontEnd.Pascal.Parsing.TopDown;
 /// <summary>
 /// Parses Pascal variable declarations.
 /// </summary>
-public class VariableDeclarationsParser
+public class VariableDeclarationsParser(PascalParserTopDown parent) : PascalParserTopDown(parent)
 {
     /// <summary>
     /// Parses variable declarations beginning at the specified token.

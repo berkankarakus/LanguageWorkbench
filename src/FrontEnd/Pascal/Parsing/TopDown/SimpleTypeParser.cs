@@ -92,7 +92,7 @@ public class SimpleTypeParser(PascalParserTopDown parent) : PascalParserTopDown(
 
     private ITypeSpec? ParseSubrangeType(Token token)
     {
-        SubrangeTypeParser subrangeTypeParser = new(this, PascalPredefined);
+        SubrangeTypeParser subrangeTypeParser = new(this);
         return subrangeTypeParser.Parse(token);
     }
 }

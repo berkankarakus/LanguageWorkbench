@@ -35,13 +35,13 @@ public class TypeSpecificationParser(PascalParserTopDown parent) : StatementPars
 
         if (token.Type == PascalTokenType.Array)
         {
-            ArrayTypeParser arrayTypeParser = new();
+            ArrayTypeParser arrayTypeParser = new(this);
             return arrayTypeParser.Parse(token);
         }
 
         if (token.Type == PascalTokenType.Record)
         {
-            RecordTypeParser recordTypeParser = new();
+            RecordTypeParser recordTypeParser = new(this);
             return recordTypeParser.Parse(token);
         }
 

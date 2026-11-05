@@ -70,7 +70,7 @@ public class DeclarationsParser(PascalParserTopDown parent) : StatementParser(pa
         {
             token = NextToken(); // Consume VAR.
 
-            VariableDeclarationsParser variableDeclarationsParser = new();
+            VariableDeclarationsParser variableDeclarationsParser = new(this);
             variableDeclarationsParser.SetDefinition(Definition.Variable);
             variableDeclarationsParser.Parse(token);
         }

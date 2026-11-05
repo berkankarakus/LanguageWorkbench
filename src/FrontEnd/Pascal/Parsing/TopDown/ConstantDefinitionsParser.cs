@@ -44,7 +44,7 @@ public class ConstantDefinitionsParser(PascalParserTopDown parent) : StatementPa
         PascalTokenType.SemiColon
     ];
 
-    // Syncronization set for the start of the next definition or declaration.
+    // Synchronization set for the start of the next definition or declaration.
     private static readonly HashSet<ITokenType> NextStartSet =
     [
         ..DeclarationsParser.TypeStartSet,
@@ -57,7 +57,7 @@ public class ConstantDefinitionsParser(PascalParserTopDown parent) : StatementPa
         token = Synchronize(IdentifierSet);
 
         // Loop to parse a sequence of constant definitions separated by semicolons.
-        while (token.Type != PascalTokenType.Identifier)
+        while (token.Type == PascalTokenType.Identifier)
         {
             string? name = token.Text?.ToLowerInvariant();
             ISymbolTableEntry? constantId = name is null
@@ -105,25 +105,37 @@ public class ConstantDefinitionsParser(PascalParserTopDown parent) : StatementPa
 
                 constantId[PascalSymbolTableKey.TypeSpec] = constantType;
             }
+
+            // ParseConstant advances the scanner, so refresh the local token before
+            // deciding whether another definition follows this one.
+            token = CurrentToken();
+
+            // A definition normally ends with one or more semicolons.  Consume them
+            // here so the loop can continue at the next identifier or declaration.
+            if (token.Type == PascalTokenType.SemiColon)
+            {
+                do
+                {
+                    token = NextToken();
+                }
+                while (token.Type == PascalTokenType.SemiColon);
+            }
+
+            // An identifier at this point starts another definition and means that
+            // the preceding semicolon was omitted.
+            else if (token.Type != null && NextStartSet.Contains(token.Type))
+            {
+                ErrorHandler.Flag(token, PascalErrorCode.MissingSemicolon, this);
+            }
         }
 
         token = CurrentToken();
-        ITokenType? tokenType = token.Type;
 
-        // Look for one or more semicolons after a definition.
-        if (tokenType == PascalTokenType.SemiColon)
-        {
-            while (token.Type == PascalTokenType.SemiColon)
-                token = NextToken(); // consume the ;
-        }
+        // Synchronize only when the token is not already a valid declaration
+        // boundary.  In particular, BEGIN must be left for the statement parser.
+        if (token.Type is null || !NextStartSet.Contains(token.Type))
+            _ = Synchronize(IdentifierSet);
 
-        // If at the start of the next definition or declaration, then missing a semicolon.
-        else if (tokenType != null && NextStartSet.Contains(tokenType))
-        {
-            ErrorHandler.Flag(token, PascalErrorCode.MissingSemicolon, this);
-        }
-
-        _ = Synchronize(IdentifierSet);
         return null;
     }
 
