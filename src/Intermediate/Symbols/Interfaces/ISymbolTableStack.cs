@@ -37,4 +37,34 @@ public interface ISymbolTableStack
     /// <param name="name">The source-level name of the symbol.</param>
     /// <returns>The matching symbol entry, or <see langword="null"/> when no visible symbol has that name.</returns>
     ISymbolTableEntry? Lookup(string name);
+
+    /// <summary>
+    /// Gets or sets the symbol-table entry for the main program identifier.
+    /// </summary>
+    /// <remarks>
+    /// The value is <see langword="null"/> until translation identifies the main program.
+    /// </remarks>
+    ISymbolTableEntry? ProgramId { get; set; }
+
+    /// <summary>
+    /// Pushes a new symbol table for the next nested lexical scope.
+    /// </summary>
+    /// <returns>The pushed symbol table.</returns>
+    ISymbolTable Push();
+
+    /// <summary>
+    /// Pushes a symbol table for the next nested lexical scope.
+    /// </summary>
+    /// <param name="symbolTable">The symbol table to push.</param>
+    /// <returns>The pushed symbol table.</returns>
+    ISymbolTable Push(ISymbolTable symbolTable);
+
+    /// <summary>
+    /// Removes and returns the current nested symbol table.
+    /// </summary>
+    /// <returns>The removed symbol table.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown when attempting to remove the outermost symbol table.
+    /// </exception>
+    ISymbolTable Pop();
 }

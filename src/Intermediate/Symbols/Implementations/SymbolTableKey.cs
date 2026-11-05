@@ -3,7 +3,7 @@ using Intermediate.Symbols.Interfaces;
 namespace Intermediate.Symbols.Implementations;
 
 /// <summary>
-/// Defines the attribute keys used by Pascal symbol table entries.
+/// Defines language-independent attribute keys used by symbol table entries.
 /// </summary>
 public sealed class SymbolTableKey : ISymbolTableKey
 {
@@ -40,7 +40,7 @@ public sealed class SymbolTableKey : ISymbolTableKey
     /// <summary>
     /// Gets the key for a routine's intermediate code.
     /// </summary>
-    public static SymbolTableKey RoutineICode { get; } = new(nameof(RoutineICode));
+    public static SymbolTableKey RoutineIntermediateCode { get; } = new(nameof(RoutineIntermediateCode));
 
     /// <summary>
     /// Gets the key for a routine's formal parameters.

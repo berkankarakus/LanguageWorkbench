@@ -21,11 +21,6 @@ public interface ISymbolTableEntry
     /// <returns>The recorded source line numbers.</returns>
     List<int> LineNumbers { get; }
 
-    /// <summary>Associates an attribute with the symbol.</summary>
-    /// <param name="key">The attribute key.</param>
-    /// <param name="value">The attribute value.</param>
-    void SetAttribute(ISymbolTableKey key, object value);
-
     /// <summary>Gets or sets an attribute associated with the symbol.</summary>
     /// <param name="key">The attribute key.</param>
     /// <returns>The stored attribute value, if any.</returns>

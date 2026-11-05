@@ -8,7 +8,7 @@ namespace Intermediate.Symbols.Implementations;
 /// </summary>
 public sealed class SymbolTable(int nestingLevel) : ISymbolTable
 {
-    private readonly SortedDictionary<string, ISymbolTableEntry> _entries = new();
+    private readonly SortedDictionary<string, ISymbolTableEntry> _entries = [];
 
     /// <inheritdoc />
     public int NestingLevel { get; } = nestingLevel;
